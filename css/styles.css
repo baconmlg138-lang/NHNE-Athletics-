@@ -624,7 +624,6 @@
   .crown-spinner{
     position:absolute;inset:0;
     transform-origin:50% 50%;
-    animation:crown-spin3d 5s linear infinite;
     will-change:transform;
   }
   .crown-spinner img{
@@ -633,13 +632,6 @@
     object-fit:contain;
     pointer-events:none;
     user-select:none;
-  }
-  @keyframes crown-spin3d{
-    from{transform:rotateY(0deg);}
-    to{transform:rotateY(360deg);}
-  }
-  @media (prefers-reduced-motion:reduce){
-    .crown-spinner{animation:none;transform:rotateY(-25deg);}
   }
 
   /* ---------- do list ---------- */
@@ -883,6 +875,10 @@
     overflow:hidden;
   }
   .gallery-intro{margin-bottom:28px;}
+  .gallery-sec--early{
+    border-top:1px solid var(--line);
+  }
+  .gallery-early-cta{margin-top:26px;padding-bottom:8px;}
   .gstrip{position:relative;}
   .gstrip-scroller{
     overflow-x:auto;
@@ -891,7 +887,7 @@
     -webkit-overflow-scrolling:touch;
     scrollbar-width:none;
     overscroll-behavior-x:contain;
-    padding:0 max(16px, calc((100% - var(--wrap)) / 2));
+    padding:0 12px;
   }
   .gstrip-scroller::-webkit-scrollbar{display:none;}
   .gstrip-scroller.is-dragging{cursor:grabbing;scroll-snap-type:none;}

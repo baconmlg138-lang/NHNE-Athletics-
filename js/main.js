@@ -82,9 +82,29 @@
         }:null);
       });
 
-      // Popup on every page visit
+      // Popup on home page every 3rd load/refresh for that browser
       var popup=null;
       var lastFocus=null;
+      var VISIT_KEY='nhne_home_visits';
+      var SHOW_EVERY=3;
+      var path=window.location.pathname.replace(/\/+$/,'');
+      var page=path.split('/').pop()||'';
+      var isHome=page===''||page==='index.html';
+
+      function getHomeVisits(){
+        try{
+          var n=parseInt(localStorage.getItem(VISIT_KEY)||'0',10);
+          return isNaN(n)?0:n;
+        }catch(err){return 0;}
+      }
+      function setHomeVisits(n){
+        try{localStorage.setItem(VISIT_KEY,String(n);}catch(err){}
+      }
+      function shouldShowPopup(){
+        var visits=getHomeVisits()+1;
+        setHomeVisits(visits);
+        return visits%SHOW_EVERY===0;
+      }
 
       function closePopup(){
         if(!popup) return;
@@ -146,8 +166,10 @@
         return el;
       }
 
-      popup=buildPopup();
-      setTimeout(openPopup,SHOW_DELAY_MS);
+      if(isHome&&shouldShowPopup()){
+        popup=buildPopup();
+        setTimeout(openPopup,SHOW_DELAY_MS);
+      }
     })();
 
     // ---- What We Do mega menu (stays open while moving to options) ----
@@ -191,33 +213,45 @@
     (function(){
       var stages=document.querySelectorAll('[data-crown3d]');
       if(!stages.length) return;
-      var layers=28;
-      var step=2.5; // deep extruded rim like 3D logo lab
+      // One centered extrusion stack — continuous full 360° spin (both faces stay 3D)
+      var layers=18;
+      var step=3.0;
       var depth=(layers-1)*step;
-      var zCenter=depth/2; // center on Z = spin in place on its axis (planet-style)
+      var zCenter=depth/2;
+      var reduce=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
       stages.forEach(function(stage){
-        var src=stage.getAttribute('data-crown3d')+'?v=geo1';
+        var base=stage.getAttribute('data-crown3d');
+        var face=base+'?v=geo12';
         var label=stage.getAttribute('aria-label')||'Crown logo';
         var spinner=document.createElement('div');
         spinner.className='crown-spinner';
 
-        var back=document.createElement('img');
-        back.src=src;
-        back.alt='';
-        back.setAttribute('aria-hidden','true');
-        back.style.transform='rotateY(180deg) translateZ('+zCenter+'px)';
-        spinner.appendChild(back);
-
+        // Hollow crown on every layer; no backface-hiding so the spin reads as a full 360
         for(var i=0;i<layers;i++){
           var img=document.createElement('img');
-          img.src=src;
-          img.alt=i===layers-1?label:'';
-          if(i!==layers-1) img.setAttribute('aria-hidden','true');
+          var isFront=i===layers-1;
+          img.src=face;
+          img.alt=isFront?label:'';
+          if(!isFront) img.setAttribute('aria-hidden','true');
           img.style.transform='translateZ('+(i*step - zCenter)+'px)';
           spinner.appendChild(img);
         }
 
         stage.appendChild(spinner);
+
+        if(!reduce){
+          var angle=0;
+          var last=performance.now();
+          function tick(now){
+            var dt=Math.min(32, now-last); last=now;
+            angle=(angle + dt*0.072) % 360; // ~5s per full turn
+            spinner.style.transform='rotateY('+angle+'deg)';
+            requestAnimationFrame(tick);
+          }
+          requestAnimationFrame(tick);
+        }else{
+          spinner.style.transform='rotateY(-25deg)';
+        }
       });
     })();
 
@@ -256,149 +290,174 @@
       start();
     })();
 
-    // ---- gallery strip: drag + idle auto-scroll ----
+    // ---- gallery strip: drag + idle auto-scroll (infinite loop) ----
     (function(){
-      var root=document.getElementById('gstrip');
-      var scroller=document.getElementById('gstrip-scroller');
-      var track=document.getElementById('gstrip-track');
-      var pill=document.getElementById('gstrip-pill');
-      if(!root||!scroller||!track) return;
-
+      var roots=[].slice.call(document.querySelectorAll('.gstrip'));
+      if(!roots.length) return;
       var reduce=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
-      var originals=[].slice.call(track.children);
-      if(!originals.length) return;
 
-      // Duplicate cards so the strip can loop seamlessly
-      originals.forEach(function(card){
-        var clone=card.cloneNode(true);
-        clone.setAttribute('aria-hidden','true');
-        var img=clone.querySelector('img');
-        if(img){img.alt='';img.removeAttribute('loading');}
-        track.appendChild(clone);
-      });
+      roots.forEach(function(root){
+        var scroller=root.querySelector('.gstrip-scroller');
+        var track=root.querySelector('.gstrip-track');
+        var pill=root.querySelector('.gstrip-pill');
+        if(!scroller||!track) return;
 
-      var dragging=false;
-      var moved=false;
-      var startX=0;
-      var startScroll=0;
-      var idle=true;
-      var resumeTimer=null;
-      var raf=null;
-      var SPEED=0.35; // px per frame at ~60fps — slow crawl
+        var originals=[].slice.call(track.children);
+        if(!originals.length) return;
 
-      function loopWidth(){
-        return track.scrollWidth / 2;
-      }
-
-      function wrapScroll(){
-        var half=loopWidth();
-        if(half<=0) return;
-        if(scroller.scrollLeft>=half){
-          scroller.scrollLeft-=half;
-        }else if(scroller.scrollLeft<0){
-          scroller.scrollLeft+=half;
+        // Three sets → always browse the middle copy (true infinite loop)
+        function cloneSet(){
+          originals.forEach(function(card){
+            var clone=card.cloneNode(true);
+            clone.setAttribute('aria-hidden','true');
+            var img=clone.querySelector('img');
+            if(img){img.alt='';img.removeAttribute('loading');}
+            track.appendChild(clone);
+          });
         }
-      }
+        cloneSet();
+        cloneSet();
 
-      function updatePill(){
-        if(!pill) return;
-        var half=loopWidth();
-        if(half<=0) return;
-        var meter=pill.parentElement;
-        var travel=Math.max(0, meter.clientWidth - pill.offsetWidth);
-        var t=(scroller.scrollLeft % half) / half;
-        pill.style.transform='translateX('+(t*travel)+'px)';
-      }
+        var dragging=false;
+        var moved=false;
+        var startX=0;
+        var startScroll=0;
+        var idle=true;
+        var resumeTimer=null;
+        var wrapping=false;
+        var SPEED=0.35; // px per frame at ~60fps — slow crawl
 
-      function tick(){
-        if(idle && !dragging && !reduce){
-          scroller.scrollLeft+=SPEED;
-          wrapScroll();
+        function unitWidth(){
+          return track.scrollWidth / 3;
+        }
+
+        function wrapScroll(){
+          var unit=unitWidth();
+          if(unit<=1) return 0;
+          var shifted=0;
+          if(scroller.scrollLeft>=unit*2){
+            scroller.scrollLeft-=unit;
+            shifted-=unit;
+          }else if(scroller.scrollLeft<unit){
+            scroller.scrollLeft+=unit;
+            shifted+=unit;
+          }
+          return shifted;
+        }
+
+        function updatePill(){
+          if(!pill) return;
+          var unit=unitWidth();
+          if(unit<=0) return;
+          var meter=pill.parentElement;
+          var travel=Math.max(0, meter.clientWidth - pill.offsetWidth);
+          var t=((scroller.scrollLeft % unit) + unit) % unit / unit;
+          pill.style.transform='translateX('+(t*travel)+'px)';
+        }
+
+        function seedLoop(){
+          var unit=unitWidth();
+          if(unit>1) scroller.scrollLeft=unit;
           updatePill();
         }
-        raf=requestAnimationFrame(tick);
-      }
 
-      function pauseIdle(){
-        idle=false;
-        if(resumeTimer){clearTimeout(resumeTimer);resumeTimer=null;}
-      }
+        function tick(){
+          if(idle && !dragging && !reduce){
+            wrapping=true;
+            scroller.scrollLeft+=SPEED;
+            wrapScroll();
+            wrapping=false;
+            updatePill();
+          }
+          requestAnimationFrame(tick);
+        }
 
-      function scheduleResume(){
-        if(reduce) return;
-        if(resumeTimer) clearTimeout(resumeTimer);
-        resumeTimer=setTimeout(function(){idle=true;}, 1400);
-      }
+        function pauseIdle(){
+          idle=false;
+          if(resumeTimer){clearTimeout(resumeTimer);resumeTimer=null;}
+        }
 
-      // Mouse: drag-to-scroll. Touch/trackpad: native horizontal scroll.
-      scroller.addEventListener('pointerdown',function(e){
-        pauseIdle();
-        if(e.pointerType!=='mouse' || e.button!==0) return;
-        dragging=true;
-        moved=false;
-        startX=e.clientX;
-        startScroll=scroller.scrollLeft;
-        scroller.classList.add('is-dragging');
-        scroller.setPointerCapture(e.pointerId);
-      });
+        function scheduleResume(){
+          if(reduce) return;
+          if(resumeTimer) clearTimeout(resumeTimer);
+          resumeTimer=setTimeout(function(){idle=true;}, 1400);
+        }
 
-      scroller.addEventListener('pointermove',function(e){
-        if(!dragging) return;
-        var dx=e.clientX-startX;
-        if(Math.abs(dx)>3) moved=true;
-        scroller.scrollLeft=startScroll-dx;
-        wrapScroll();
-        updatePill();
-      });
-
-      function endDrag(e){
-        if(!dragging) return;
-        dragging=false;
-        scroller.classList.remove('is-dragging');
-        try{scroller.releasePointerCapture(e.pointerId);}catch(_){}
-        scheduleResume();
-      }
-
-      scroller.addEventListener('pointerup',function(e){
-        if(dragging) endDrag(e);
-        else scheduleResume();
-      });
-      scroller.addEventListener('pointercancel',function(e){
-        if(dragging) endDrag(e);
-        else scheduleResume();
-      });
-
-      scroller.addEventListener('click',function(e){
-        if(moved){e.preventDefault();e.stopPropagation();}
-      },true);
-
-      scroller.addEventListener('wheel',function(e){
-        if(Math.abs(e.deltaY)>Math.abs(e.deltaX) && Math.abs(e.deltaY)>0){
-          scroller.scrollLeft+=e.deltaY;
-          wrapScroll();
-          updatePill();
+        scroller.addEventListener('pointerdown',function(e){
           pauseIdle();
-          scheduleResume();
-          e.preventDefault();
-        }else{
-          pauseIdle();
-          scheduleResume();
-        }
-      },{passive:false});
+          if(e.pointerType!=='mouse' || e.button!==0) return;
+          dragging=true;
+          moved=false;
+          startX=e.clientX;
+          startScroll=scroller.scrollLeft;
+          scroller.classList.add('is-dragging');
+          scroller.setPointerCapture(e.pointerId);
+        });
 
-      scroller.addEventListener('scroll',function(){
-        if(!dragging){
-          wrapScroll();
+        scroller.addEventListener('pointermove',function(e){
+          if(!dragging) return;
+          var dx=e.clientX-startX;
+          if(Math.abs(dx)>3) moved=true;
+          wrapping=true;
+          scroller.scrollLeft=startScroll-dx;
+          var shifted=wrapScroll();
+          if(shifted) startScroll+=shifted;
+          wrapping=false;
           updatePill();
-          if(idle) return;
+        });
+
+        function endDrag(e){
+          if(!dragging) return;
+          dragging=false;
+          scroller.classList.remove('is-dragging');
+          try{scroller.releasePointerCapture(e.pointerId);}catch(_){}
           scheduleResume();
         }
-      },{passive:true});
 
-      window.addEventListener('resize',updatePill);
+        scroller.addEventListener('pointerup',function(e){
+          if(dragging) endDrag(e);
+          else scheduleResume();
+        });
+        scroller.addEventListener('pointercancel',function(e){
+          if(dragging) endDrag(e);
+          else scheduleResume();
+        });
 
-      updatePill();
-      if(!reduce) raf=requestAnimationFrame(tick);
+        scroller.addEventListener('click',function(e){
+          if(moved){e.preventDefault();e.stopPropagation();}
+        },true);
+
+        scroller.addEventListener('wheel',function(e){
+          if(Math.abs(e.deltaY)>Math.abs(e.deltaX) && Math.abs(e.deltaY)>0){
+            wrapping=true;
+            scroller.scrollLeft+=e.deltaY;
+            wrapScroll();
+            wrapping=false;
+            updatePill();
+            pauseIdle();
+            scheduleResume();
+            e.preventDefault();
+          }else{
+            pauseIdle();
+            scheduleResume();
+          }
+        },{passive:false});
+
+        scroller.addEventListener('scroll',function(){
+          if(wrapping) return;
+          wrapping=true;
+          wrapScroll();
+          wrapping=false;
+          updatePill();
+          if(!idle) scheduleResume();
+        },{passive:true});
+
+        window.addEventListener('resize',seedLoop);
+        seedLoop();
+        requestAnimationFrame(seedLoop);
+        window.addEventListener('load',seedLoop);
+        if(!reduce) requestAnimationFrame(tick);
+      });
     })();
 
     // ---- Our Why: verse reveal (tap toggle for touch / keyboard) ----
