@@ -801,4 +801,28 @@
         });
       });
     })();
+
+    // ---- Duo CTA: fade-in character cutout ----
+    (function(){
+      var figures=document.querySelectorAll('[data-duo-character]');
+      if(!figures.length) return;
+      var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      function show(el){el.classList.add('is-in');}
+
+      if(reduce||!('IntersectionObserver' in window)){
+        figures.forEach(show);
+        return;
+      }
+
+      var io=new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if(!entry.isIntersecting) return;
+          show(entry.target);
+          io.unobserve(entry.target);
+        });
+      },{threshold:0.35,rootMargin:'0px 0px -8% 0px'});
+
+      figures.forEach(function(el){io.observe(el);});
+    })();
   })();

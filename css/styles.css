@@ -301,6 +301,8 @@
 
   /* ---------- CTA duo ---------- */
   .duo{display:grid;gap:18px;}
+  #join{overflow:visible;}
+  #join .wrap{overflow:visible;}
   .duo-card{
     border-radius:var(--r);padding:34px 24px;text-align:center;color:#fff;
   }
@@ -309,6 +311,71 @@
   .duo-card h3{font-size:clamp(21px,5.5vw,27px);margin-bottom:10px;}
   .duo-card p{font-size:16px;opacity:.92;margin-bottom:20px;}
   .duo-card:nth-child(2) p{opacity:1;color:#3A2E08;}
+
+  /* Support card: athlete cutout layered over the right edge */
+  .duo-card--character{
+    position:relative;
+    overflow:visible;
+    z-index:1;
+    padding-right:clamp(130px,36vw,190px);
+    text-align:left;
+  }
+  .duo-card--character .duo-card-copy{
+    position:relative;
+    z-index:1;
+    max-width:34ch;
+  }
+  /* Cutout + ground shadow share one fade/slide so they stay locked together */
+  .duo-character-wrap{
+    position:absolute;
+    right:clamp(-72px,-14vw,-40px);
+    bottom:clamp(-18px,-3vw,-6px);
+    height:clamp(210px,58vw,320px);
+    width:auto;
+    aspect-ratio:1;
+    pointer-events:none;
+    user-select:none;
+    z-index:2;
+    opacity:0;
+    transform:translateX(36px);
+    transition:opacity 1.15s ease, transform 1.15s ease;
+    will-change:opacity,transform;
+  }
+  .duo-character-wrap.is-in{
+    opacity:1;
+    transform:translateX(0);
+  }
+  .duo-character{
+    position:relative;
+    display:block;
+    height:100%;
+    width:auto;
+    max-width:none;
+    z-index:2;
+  }
+  /* Ellipse sits under the planted feet inside the cutout frame */
+  .duo-character-wrap::after{
+    content:"";
+    position:absolute;
+    left:44%;
+    bottom:-1.5%;
+    width:48%;
+    height:5.5%;
+    border-radius:50%;
+    background:radial-gradient(ellipse at center,
+      rgba(11,31,62,.38) 0%,
+      rgba(11,31,62,.16) 45%,
+      transparent 74%);
+    transform:translateX(-50%);
+    z-index:1;
+  }
+  @media (prefers-reduced-motion:reduce){
+    .duo-character-wrap{
+      transition:none;
+      transform:none;
+    }
+    .duo-character-wrap.is-in{transform:none;}
+  }
 
   /* ---------- problem band ---------- */
   .band{
@@ -1113,7 +1180,21 @@
     .hero-btns{flex-direction:row;justify-content:center;max-width:none;}
     .cbtns{flex-direction:row;justify-content:center;max-width:none;}
     .vm{grid-template-columns:1fr 1fr;}
-    .duo{grid-template-columns:1fr 1fr;}
+    .duo{grid-template-columns:1fr 1fr;align-items:stretch;}
+    .duo-card--character{
+      padding-right:clamp(150px,20vw,210px);
+      text-align:center;
+    }
+    .duo-card--character .duo-card-copy{
+      max-width:none;
+      margin:0 auto;
+      padding-right:8px;
+    }
+    .duo-character-wrap{
+      right:clamp(-88px,-9vw,-48px);
+      bottom:clamp(-28px,-3vw,-10px);
+      height:clamp(250px,32vw,340px);
+    }
     .do-list{grid-template-columns:1fr 1fr;}
     /* center the 5th item on its own row, matching the width of one column */
     .do-list .do-item:nth-child(5){grid-column:1 / -1;width:calc(50% - 7px);justify-self:center;}
