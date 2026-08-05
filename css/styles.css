@@ -954,7 +954,10 @@
     -webkit-overflow-scrolling:touch;
     scrollbar-width:none;
     overscroll-behavior-x:contain;
+    overflow-anchor:none;
     padding:0 12px;
+    /* Reserve space even if flex/img sizing glitches mid-load */
+    min-height:clamp(168px, 48vw, 262px);
   }
   .gstrip-scroller::-webkit-scrollbar{display:none;}
   .gstrip-scroller.is-dragging{cursor:grabbing;scroll-snap-type:none;}
@@ -967,10 +970,15 @@
     padding:4px 0 8px;
   }
   .gcard{
+    --gcard-w:min(78vw, 340px);
     position:relative;
     margin:0;
-    flex:0 0 min(78vw, 340px);
+    flex:0 0 var(--gcard-w);
+    width:var(--gcard-w);
+    min-width:var(--gcard-w);
+    max-width:var(--gcard-w);
     aspect-ratio:16 / 10;
+    height:auto;
     border-radius:4px;
     overflow:hidden;
     background:var(--navy-deep);
@@ -978,8 +986,12 @@
     -webkit-user-select:none;
   }
   .gcard img{
+    /* Override global img{max-width:100%;height:auto} — that combo
+       collapses percentage-sized media inside flex cards to blank. */
+    position:absolute;inset:0;
     width:100%;
     height:100%;
+    max-width:none;
     object-fit:cover;
     display:block;
     pointer-events:none;
@@ -1101,11 +1113,12 @@
     will-change:transform;
   }
   @media (min-width:700px){
-    .gcard{flex-basis:min(42vw, 380px);}
+    .gcard{--gcard-w:min(42vw, 380px);}
     .gstrip-track{gap:12px;}
+    .gstrip-scroller{min-height:clamp(200px, 26vw, 238px);}
   }
   @media (min-width:980px){
-    .gcard{flex-basis:min(30vw, 420px);}
+    .gcard{--gcard-w:min(30vw, 420px);}
     .gallery-intro{margin-bottom:34px;}
   }
   @media (prefers-reduced-motion:reduce){
