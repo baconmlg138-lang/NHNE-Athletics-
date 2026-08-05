@@ -450,7 +450,8 @@
       start();
     })();
 
-    // ---- gallery strip: drag + idle auto-scroll (infinite loop) ----
+    // ---- gallery strip: drag + idle auto-scroll (transform loop) ----
+    // Uses translate3d instead of scrollLeft so motion works on iOS Safari.
     (function(){
       var roots=[].slice.call(document.querySelectorAll('.gstrip'));
       if(!roots.length) return;
@@ -466,39 +467,36 @@
         var setCount=originals.length;
         if(!setCount) return;
 
-        // Three identical sets → browse the middle copy for seamless looping
-        function cloneSet(){
-          originals.forEach(function(card){
-            var clone=card.cloneNode(true);
-            clone.setAttribute('aria-hidden','true');
-            clone.removeAttribute('id');
-            var img=clone.querySelector('img');
-            if(img){
-              img.alt='';
-              img.removeAttribute('loading');
-              // Eager-decode so middle-set clones aren't blank after seed
-              try{if(img.decode) img.decode().catch(function(){});}catch(_){}
-            }
-            track.appendChild(clone);
-          });
-        }
-        cloneSet();
-        cloneSet();
+        // Second copy → seamless wrap when offset passes one set width
+        originals.forEach(function(card){
+          var clone=card.cloneNode(true);
+          clone.setAttribute('aria-hidden','true');
+          clone.removeAttribute('id');
+          var img=clone.querySelector('img');
+          if(img){
+            img.alt='';
+            img.removeAttribute('loading');
+            try{if(img.decode) img.decode().catch(function(){});}catch(_){}
+          }
+          track.appendChild(clone);
+        });
 
+        var offset=0;
         var dragging=false;
         var moved=false;
         var startX=0;
-        var startScroll=0;
+        var startY=0;
+        var startOffset=0;
+        var axis=null; // 'x' | 'y' — lock gesture direction on touch
         var idle=true;
+        var inView=true;
         var resumeTimer=null;
-        var wrapping=false;
-        var seeded=false;
-        var SPEED=0.35;
+        var ready=false;
+        var SPEED=0.45; // px per frame — slightly snappier on mobile screens
 
-        // Exact set width from layout (flex gap-safe). scrollWidth/3 drifts.
         function unitWidth(){
           var cards=track.children;
-          if(cards.length<setCount*2) return 0;
+          if(cards.length<setCount+1) return 0;
           var a=cards[0];
           var b=cards[setCount];
           if(!a||!b) return 0;
@@ -506,30 +504,24 @@
           return w>1?w:0;
         }
 
-        function wrapScroll(){
+        function normalize(v){
           var unit=unitWidth();
-          if(unit<=1) return 0;
-          var shifted=0;
-          // Keep position inside the middle set
-          while(scroller.scrollLeft>=unit*2){
-            scroller.scrollLeft-=unit;
-            shifted-=unit;
-          }
-          while(scroller.scrollLeft<unit){
-            scroller.scrollLeft+=unit;
-            shifted+=unit;
-          }
-          return shifted;
+          if(unit<=1) return v;
+          v=v%unit;
+          if(v<0) v+=unit;
+          return v;
         }
 
-        function updatePill(){
+        function apply(){
+          offset=normalize(offset);
+          track.style.transform='translate3d('+(-offset)+'px,0,0)';
           if(!pill) return;
           var unit=unitWidth();
           if(unit<=0) return;
           var meter=pill.parentElement;
           if(!meter) return;
           var travel=Math.max(0, meter.clientWidth-pill.offsetWidth);
-          var t=((scroller.scrollLeft%unit)+unit)%unit/unit;
+          var t=unit?offset/unit:0;
           pill.style.transform='translateX('+(t*travel)+'px)';
         }
 
@@ -538,32 +530,16 @@
           return !!(card && card.offsetWidth>1 && card.offsetHeight>1);
         }
 
-        function seedLoop(force){
-          if(!cardsHaveSize()) return;
-          var unit=unitWidth();
-          if(unit<=1) return;
-          // Only jump when unset, forced, or clearly outside the loop band
-          var sl=scroller.scrollLeft;
-          if(force || !seeded || sl<unit*0.5 || sl>=unit*2.5){
-            wrapping=true;
-            scroller.scrollLeft=unit;
-            wrapping=false;
-            seeded=true;
-          }else{
-            wrapping=true;
-            wrapScroll();
-            wrapping=false;
-          }
-          updatePill();
+        function measure(){
+          if(!cardsHaveSize() || unitWidth()<=1) return;
+          ready=true;
+          apply();
         }
 
         function tick(){
-          if(idle && !dragging && !reduce && seeded){
-            wrapping=true;
-            scroller.scrollLeft+=SPEED;
-            wrapScroll();
-            wrapping=false;
-            updatePill();
+          if(idle && !dragging && !reduce && ready && inView){
+            offset+=SPEED;
+            apply();
           }
           requestAnimationFrame(tick);
         }
@@ -576,47 +552,58 @@
         function scheduleResume(){
           if(reduce) return;
           if(resumeTimer) clearTimeout(resumeTimer);
-          resumeTimer=setTimeout(function(){idle=true;}, 1400);
+          resumeTimer=setTimeout(function(){idle=true;}, 1200);
         }
 
         scroller.addEventListener('pointerdown',function(e){
+          if(e.pointerType==='mouse' && e.button!==0) return;
           pauseIdle();
-          if(e.pointerType!=='mouse' || e.button!==0) return;
           dragging=true;
           moved=false;
+          axis=null;
           startX=e.clientX;
-          startScroll=scroller.scrollLeft;
+          startY=e.clientY;
+          startOffset=offset;
           scroller.classList.add('is-dragging');
-          scroller.setPointerCapture(e.pointerId);
+          try{scroller.setPointerCapture(e.pointerId);}catch(_){}
         });
 
         scroller.addEventListener('pointermove',function(e){
           if(!dragging) return;
           var dx=e.clientX-startX;
+          var dy=e.clientY-startY;
+          if(!axis){
+            if(Math.abs(dx)<4 && Math.abs(dy)<4) return;
+            // Prefer vertical page scroll when the gesture is mostly vertical
+            axis=Math.abs(dx)>Math.abs(dy)?'x':'y';
+            if(axis==='y'){
+              dragging=false;
+              scroller.classList.remove('is-dragging');
+              try{scroller.releasePointerCapture(e.pointerId);}catch(_){}
+              scheduleResume();
+              return;
+            }
+          }
+          if(axis!=='x') return;
           if(Math.abs(dx)>3) moved=true;
-          wrapping=true;
-          scroller.scrollLeft=startScroll-dx;
-          var shifted=wrapScroll();
-          if(shifted) startScroll+=shifted;
-          wrapping=false;
-          updatePill();
-        });
+          offset=startOffset-dx;
+          apply();
+          if(e.cancelable) e.preventDefault();
+        },{passive:false});
 
         function endDrag(e){
-          if(!dragging) return;
+          if(!dragging && axis!=='x') return;
           dragging=false;
+          axis=null;
           scroller.classList.remove('is-dragging');
-          try{scroller.releasePointerCapture(e.pointerId);}catch(_){}
+          try{if(e) scroller.releasePointerCapture(e.pointerId);}catch(_){}
           scheduleResume();
         }
 
-        scroller.addEventListener('pointerup',function(e){
-          if(dragging) endDrag(e);
-          else scheduleResume();
-        });
-        scroller.addEventListener('pointercancel',function(e){
-          if(dragging) endDrag(e);
-          else scheduleResume();
+        scroller.addEventListener('pointerup',endDrag);
+        scroller.addEventListener('pointercancel',endDrag);
+        scroller.addEventListener('lostpointercapture',function(){
+          if(dragging){dragging=false;axis=null;scroller.classList.remove('is-dragging');scheduleResume();}
         });
 
         scroller.addEventListener('click',function(e){
@@ -627,53 +614,45 @@
         },true);
 
         scroller.addEventListener('wheel',function(e){
-          if(Math.abs(e.deltaY)>Math.abs(e.deltaX) && Math.abs(e.deltaY)>0){
-            wrapping=true;
-            scroller.scrollLeft+=e.deltaY;
-            wrapScroll();
-            wrapping=false;
-            updatePill();
-            pauseIdle();
-            scheduleResume();
-            e.preventDefault();
-          }else{
-            pauseIdle();
-            scheduleResume();
-          }
+          var dx=e.deltaX;
+          var dy=e.deltaY;
+          if(Math.abs(dy)>Math.abs(dx)) dx=dy;
+          if(!dx) return;
+          offset+=dx;
+          apply();
+          pauseIdle();
+          scheduleResume();
+          e.preventDefault();
         },{passive:false});
 
-        scroller.addEventListener('scroll',function(){
-          if(wrapping) return;
-          wrapping=true;
-          wrapScroll();
-          wrapping=false;
-          updatePill();
-          if(!idle) scheduleResume();
-        },{passive:true});
+        // Pause off-screen to save battery; resume when visible
+        if(typeof IntersectionObserver!=='undefined'){
+          var io=new IntersectionObserver(function(entries){
+            inView=entries.some(function(en){return en.isIntersecting;});
+          },{threshold:0.15});
+          io.observe(root);
+        }
 
         var resizeTimer=null;
         window.addEventListener('resize',function(){
           clearTimeout(resizeTimer);
-          // Mobile URL bar show/hide fires resize — don't hard-jump every time
-          resizeTimer=setTimeout(function(){seedLoop(false);}, 120);
+          resizeTimer=setTimeout(measure, 120);
         });
 
-        // Seed after layout is real (avoids blank middle-set jump)
-        seedLoop(true);
-        requestAnimationFrame(function(){seedLoop(true);});
-        window.addEventListener('load',function(){seedLoop(true);});
+        measure();
+        requestAnimationFrame(measure);
+        window.addEventListener('load',measure);
 
         if(typeof ResizeObserver!=='undefined'){
-          var ro=new ResizeObserver(function(){seedLoop(false);});
+          var ro=new ResizeObserver(measure);
           ro.observe(track);
           ro.observe(scroller);
         }
 
-        // If an image finishes late and sizes were 0 before, re-seed
         track.querySelectorAll('img').forEach(function(img){
           if(img.complete) return;
-          img.addEventListener('load',function(){seedLoop(false);},{once:true});
-          img.addEventListener('error',function(){seedLoop(false);},{once:true});
+          img.addEventListener('load',measure,{once:true});
+          img.addEventListener('error',measure,{once:true});
         });
 
         if(!reduce) requestAnimationFrame(tick);

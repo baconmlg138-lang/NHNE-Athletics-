@@ -948,19 +948,15 @@
   .gallery-early-cta{margin-top:26px;padding-bottom:8px;}
   .gstrip{position:relative;}
   .gstrip-scroller{
-    overflow-x:auto;
-    overflow-y:hidden;
+    /* Transform-based marquee (scrollLeft auto-move is ignored on iOS) */
+    overflow:hidden;
     cursor:grab;
-    -webkit-overflow-scrolling:touch;
-    scrollbar-width:none;
-    overscroll-behavior-x:contain;
-    overflow-anchor:none;
+    touch-action:pan-y;
     padding:0 12px;
     /* Reserve space even if flex/img sizing glitches mid-load */
     min-height:clamp(168px, 48vw, 262px);
   }
-  .gstrip-scroller::-webkit-scrollbar{display:none;}
-  .gstrip-scroller.is-dragging{cursor:grabbing;scroll-snap-type:none;}
+  .gstrip-scroller.is-dragging{cursor:grabbing;}
   .gstrip-scroller:focus-visible{outline:none;}
   .gstrip-scroller:focus-visible .gcard{box-shadow:0 0 0 3px var(--gold);}
   .gstrip-track{
@@ -968,6 +964,9 @@
     gap:10px;
     width:max-content;
     padding:4px 0 8px;
+    will-change:transform;
+    backface-visibility:hidden;
+    -webkit-backface-visibility:hidden;
   }
   .gcard{
     --gcard-w:min(78vw, 340px);
