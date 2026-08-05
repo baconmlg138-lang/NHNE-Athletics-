@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://nhneathletics.org/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://nhneathletics.org/about.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://nhneathletics.org/staff.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://nhneathletics.org/what-we-do.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://nhneathletics.org/mentorship.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://nhneathletics.org/curriculum.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://nhneathletics.org/podcast.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://nhneathletics.org/bible-studies.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://nhneathletics.org/outreach.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://nhneathletics.org/gallery.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://nhneathletics.org/gallery-soccer.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://nhneathletics.org/gallery-basketball.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://nhneathletics.org/events.html</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://nhneathletics.org/contact.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://nhneathletics.org/donate.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://nhneathletics.org/privacy.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+</urlset>

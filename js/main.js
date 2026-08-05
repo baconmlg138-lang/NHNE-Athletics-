@@ -1,4 +1,8 @@
 (function(){
+    // Set your Google Analytics 4 Measurement ID to enable analytics (e.g. 'G-XXXXXXXXXX').
+    // Leave empty to keep analytics off until you have an ID.
+    var GA_MEASUREMENT_ID='';
+
     var b=document.getElementById('burger'),m=document.getElementById('mnav');
     if(b&&m){
       b.addEventListener('click',function(){
@@ -12,20 +16,54 @@
     var yrEl=document.getElementById('yr');
     if(yrEl) yrEl.textContent=new Date().getFullYear();
 
+    // ---- Analytics (GA4) — only loads when GA_MEASUREMENT_ID is set ----
+    (function(){
+      if(!GA_MEASUREMENT_ID||!/^G-[A-Z0-9]+$/i.test(GA_MEASUREMENT_ID)) return;
+      window.dataLayer=window.dataLayer||[];
+      function gtag(){window.dataLayer.push(arguments);}
+      window.gtag=gtag;
+      gtag('js',new Date());
+      gtag('config',GA_MEASUREMENT_ID,{anonymize_ip:true});
+      var s=document.createElement('script');
+      s.async=true;
+      s.src='https://www.googletagmanager.com/gtag/js?id='+encodeURIComponent(GA_MEASUREMENT_ID);
+      document.head.appendChild(s);
+    })();
+
+    // ---- Shared FormSubmit helpers ----
+    var FORMSUBMIT_ENDPOINT='https://formsubmit.co/ajax/hello@nhneathletics.org';
+    function isValidEmail(email){
+      return !!email&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+    function setFormStatus(status,msg,kind){
+      if(!status) return;
+      status.textContent=msg;
+      status.classList.remove('is-ok','is-err');
+      if(kind) status.classList.add(kind);
+    }
+    function postFormSubmit(payload){
+      return fetch(FORMSUBMIT_ENDPOINT,{
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          'Accept':'application/json'
+        },
+        body:JSON.stringify(Object.assign({
+          _template:'table',
+          _captcha:'false'
+        },payload))
+      }).then(function(res){
+        if(!res.ok) throw new Error('Request failed');
+        return res.json().catch(function(){return {};});
+      });
+    }
+
     // ---- Email signup (news & events notifications) ----
     // Submissions go to hello@nhneathletics.org via FormSubmit.
     // First submission triggers a one-time activation email to that inbox.
     (function(){
-      var ENDPOINT='https://formsubmit.co/ajax/hello@nhneathletics.org';
       var SHOW_DELAY_MS=1200;
       var CLOSE_AFTER_SUCCESS_MS=1600;
-
-      function setStatus(status,msg,kind){
-        if(!status) return;
-        status.textContent=msg;
-        status.classList.remove('is-ok','is-err');
-        if(kind) status.classList.add(kind);
-      }
 
       function submitSignup(form,onSuccess){
         var emailInput=form.querySelector('input[name="email"]');
@@ -35,38 +73,26 @@
         var email=emailInput?emailInput.value.trim():'';
 
         if(honey&&honey.value) return;
-        if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
-          setStatus(status,'Please enter a valid email address.','is-err');
+        if(!isValidEmail(email)){
+          setFormStatus(status,'Please enter a valid email address.','is-err');
           if(emailInput) emailInput.focus();
           return;
         }
 
         var prevLabel=btn?btn.textContent:'';
         if(btn){btn.disabled=true;btn.textContent='Sending…';}
-        setStatus(status,'Signing you up…','');
+        setFormStatus(status,'Signing you up…','');
 
-        fetch(ENDPOINT,{
-          method:'POST',
-          headers:{
-            'Content-Type':'application/json',
-            'Accept':'application/json'
-          },
-          body:JSON.stringify({
-            email:email,
-            _subject:'NHNE Athletics — News & Events signup',
-            message:'Please add this email to the news and events notification list.',
-            _template:'table',
-            _captcha:'false'
-          })
-        }).then(function(res){
-          if(!res.ok) throw new Error('Request failed');
-          return res.json().catch(function(){return {};});
+        postFormSubmit({
+          email:email,
+          _subject:'NHNE Athletics — News & Events signup',
+          message:'Please add this email to the news and events notification list.'
         }).then(function(){
-          setStatus(status,"You're on the list — we'll keep you posted.",'is-ok');
+          setFormStatus(status,"You're on the list — we'll keep you posted.",'is-ok');
           form.reset();
           if(typeof onSuccess==='function') onSuccess();
         }).catch(function(){
-          setStatus(status,'Something went wrong. Email us at hello@nhneathletics.org.','is-err');
+          setFormStatus(status,'Something went wrong. Email us at hello@nhneathletics.org.','is-err');
         }).finally(function(){
           if(btn){btn.disabled=false;btn.textContent=prevLabel;}
         });
@@ -98,7 +124,7 @@
         }catch(err){return 0;}
       }
       function setHomeVisits(n){
-        try{localStorage.setItem(VISIT_KEY,String(n);}catch(err){}
+        try{localStorage.setItem(VISIT_KEY,String(n));}catch(err){}
       }
       function shouldShowPopup(){
         var visits=getHomeVisits()+1;
@@ -170,6 +196,140 @@
         popup=buildPopup();
         setTimeout(openPopup,SHOW_DELAY_MS);
       }
+    })();
+
+    // ---- Contact / donate interest / event RSVP forms ----
+    (function(){
+      function val(form,name){
+        var el=form.querySelector('[name="'+name+'"]');
+        return el?String(el.value||'').trim():'';
+      }
+
+      function submitGeneric(form,opts){
+        var honey=form.querySelector('input[name="_honey"]');
+        var status=form.querySelector('[data-signup-status]');
+        var btn=form.querySelector('button[type="submit"]');
+        if(honey&&honey.value) return;
+
+        var email=val(form,'email');
+        var name=val(form,'name');
+        if(!name){
+          setFormStatus(status,'Please enter your name.','is-err');
+          var nameEl=form.querySelector('[name="name"]');
+          if(nameEl) nameEl.focus();
+          return;
+        }
+        if(!isValidEmail(email)){
+          setFormStatus(status,'Please enter a valid email address.','is-err');
+          var emailEl=form.querySelector('[name="email"]');
+          if(emailEl) emailEl.focus();
+          return;
+        }
+
+        var prevLabel=btn?btn.textContent:'';
+        if(btn){btn.disabled=true;btn.textContent='Sending…';}
+        setFormStatus(status,opts.pendingMsg||'Sending…','');
+
+        var payload=opts.buildPayload(form);
+        postFormSubmit(payload).then(function(){
+          setFormStatus(status,opts.okMsg||'Message sent — we will follow up soon.','is-ok');
+          form.reset();
+          if(opts.preserveHidden){
+            Object.keys(opts.preserveHidden).forEach(function(k){
+              var el=form.querySelector('[name="'+k+'"]');
+              if(el) el.value=opts.preserveHidden[k];
+            });
+          }
+        }).catch(function(){
+          setFormStatus(status,'Something went wrong. Email us at hello@nhneathletics.org.','is-err');
+        }).finally(function(){
+          if(btn){btn.disabled=false;btn.textContent=prevLabel;}
+        });
+      }
+
+      // Prefill contact form from ?interest=&event= query params
+      (function(){
+        var form=document.querySelector('[data-contact-form]');
+        if(!form) return;
+        var params=new URLSearchParams(window.location.search);
+        var interest=params.get('interest');
+        var eventName=params.get('event');
+        var interestEl=form.querySelector('[name="interest"]');
+        var messageEl=form.querySelector('[name="message"]');
+        if(interest&&interestEl){
+          for(var i=0;i<interestEl.options.length;i++){
+            if(interestEl.options[i].value===interest){
+              interestEl.value=interest;
+              break;
+            }
+          }
+        }
+        if(eventName&&messageEl&&!messageEl.value){
+          messageEl.value='I am interested in: '+eventName;
+          if(interestEl&&!interestEl.value) interestEl.value='event';
+        }
+      })();
+
+      document.addEventListener('submit',function(e){
+        var contact=e.target.closest('[data-contact-form]');
+        if(contact){
+          e.preventDefault();
+          submitGeneric(contact,{
+            pendingMsg:'Sending your message…',
+            okMsg:'Thanks — a team leader will follow up with you.',
+            buildPayload:function(form){
+              return {
+                name:val(form,'name'),
+                email:val(form,'email'),
+                phone:val(form,'phone')||'—',
+                interest:val(form,'interest')||'general',
+                message:val(form,'message')||'—',
+                _subject:'NHNE Athletics — Contact form'
+              };
+            }
+          });
+          return;
+        }
+
+        var donate=e.target.closest('[data-donate-form]');
+        if(donate){
+          e.preventDefault();
+          submitGeneric(donate,{
+            pendingMsg:'Sending…',
+            okMsg:'Thank you — we will reach out with giving details.',
+            buildPayload:function(form){
+              return {
+                name:val(form,'name'),
+                email:val(form,'email'),
+                amount:val(form,'amount')||'—',
+                message:val(form,'message')||'—',
+                _subject:'NHNE Athletics — Donate / support interest'
+              };
+            }
+          });
+          return;
+        }
+
+        var rsvp=e.target.closest('[data-rsvp-form]');
+        if(rsvp){
+          e.preventDefault();
+          var eventTitle=rsvp.getAttribute('data-event')||val(rsvp,'event')||'Upcoming event';
+          submitGeneric(rsvp,{
+            pendingMsg:'Sending RSVP…',
+            okMsg:'RSVP received — we will follow up with details.',
+            preserveHidden:{event:eventTitle},
+            buildPayload:function(form){
+              return {
+                name:val(form,'name'),
+                email:val(form,'email'),
+                event:eventTitle,
+                message:val(form,'message')||'Please send me details / save my spot.',
+                _subject:'NHNE Athletics — Event RSVP: '+eventTitle
+              };
+            }
+          });
+        }
+      });
     })();
 
     // ---- What We Do mega menu (stays open while moving to options) ----
@@ -424,7 +584,15 @@
         });
 
         scroller.addEventListener('click',function(e){
-          if(moved){e.preventDefault();e.stopPropagation();}
+          if(moved){
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+          }
+          var link=e.target.closest('a.gcard[href]');
+          if(link&&link.href){
+            // allow normal navigation
+          }
         },true);
 
         scroller.addEventListener('wheel',function(e){
@@ -572,6 +740,65 @@
           rootMargin:'0px 0px -10% 0px'
         });
         io.observe(el);
+      });
+    })();
+
+    // ---- Instagram-style gallery lightbox ----
+    (function(){
+      var cells=[].slice.call(document.querySelectorAll('[data-lightbox]'));
+      if(!cells.length) return;
+      var lb=null;
+      var lastFocus=null;
+
+      function ensureLightbox(){
+        if(lb) return lb;
+        lb=document.createElement('div');
+        lb.className='ig-lightbox';
+        lb.setAttribute('role','dialog');
+        lb.setAttribute('aria-modal','true');
+        lb.setAttribute('aria-label','Photo viewer');
+        lb.innerHTML=
+          '<div class="ig-lightbox-backdrop" data-lb-close></div>'+
+          '<div class="ig-lightbox-dialog">'+
+            '<button type="button" class="ig-lightbox-close" data-lb-close aria-label="Close">&times;</button>'+
+            '<img src="" alt="">'+
+          '</div>';
+        document.body.appendChild(lb);
+        lb.addEventListener('click',function(e){
+          if(e.target.closest('[data-lb-close]')) close();
+        });
+        document.addEventListener('keydown',function(e){
+          if(e.key==='Escape'&&lb.classList.contains('is-open')) close();
+        });
+        return lb;
+      }
+
+      function open(src,alt){
+        var box=ensureLightbox();
+        var img=box.querySelector('img');
+        lastFocus=document.activeElement;
+        img.src=src;
+        img.alt=alt||'';
+        box.classList.add('is-open');
+        document.body.classList.add('ig-lightbox-open');
+        box.querySelector('[data-lb-close]').focus();
+      }
+
+      function close(){
+        if(!lb) return;
+        lb.classList.remove('is-open');
+        document.body.classList.remove('ig-lightbox-open');
+        var img=lb.querySelector('img');
+        if(img){img.removeAttribute('src');img.alt='';}
+        if(lastFocus&&typeof lastFocus.focus==='function') lastFocus.focus();
+      }
+
+      cells.forEach(function(cell){
+        cell.addEventListener('click',function(e){
+          e.preventDefault();
+          var img=cell.querySelector('img');
+          open(cell.getAttribute('href')||(img&&img.src), img?img.alt:'');
+        });
       });
     })();
   })();
