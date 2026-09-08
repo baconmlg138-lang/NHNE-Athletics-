@@ -338,7 +338,7 @@
     z-index:2;
     opacity:0;
     transform:translateX(36px);
-    transition:opacity 1.15s ease, transform 1.15s ease;
+    transition:opacity 0.1s ease, transform 0.1s ease;
     will-change:opacity,transform;
   }
   .duo-character-wrap.is-in{
@@ -416,10 +416,10 @@
     transform:translateY(.55em) rotate(.6deg);
     filter:blur(4px);
     transition:
-      opacity .7s cubic-bezier(.22,1,.36,1),
-      transform .7s cubic-bezier(.22,1,.36,1),
-      filter .7s cubic-bezier(.22,1,.36,1);
-    transition-delay:calc(var(--i,0) * 55ms);
+      opacity .15s cubic-bezier(.22,1,.36,1),
+      transform .15s cubic-bezier(.22,1,.36,1),
+      filter .15s cubic-bezier(.22,1,.36,1);
+    transition-delay:calc(var(--i,0) * 8ms);
     will-change:opacity,transform,filter;
   }
   .pull.is-in .pull-word{
