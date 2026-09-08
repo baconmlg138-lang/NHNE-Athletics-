@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000">
+  <defs>
+    <linearGradient id="bg1" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#bfe8a8"/>
+      <stop offset="100%" stop-color="#5d9f53"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="1000" fill="url(#bg1)"/>
+  <rect y="780" width="1600" height="220" fill="#2f6f30" opacity="0.9"/>
+  <path d="M0 820 L1600 820" stroke="#f4f7f5" stroke-width="8" opacity="0.9"/>
+  <path d="M0 860 L1600 860" stroke="#f4f7f5" stroke-width="8" opacity="0.9"/>
+  <circle cx="520" cy="420" r="100" fill="#f4d29d"/>
+  <path d="M430 470 Q520 540 610 470 L640 760 L400 760 Z" fill="#dfe82a"/>
+  <path d="M600 500 L760 470 L860 760 L640 760 Z" fill="#dfe82a"/>
+  <path d="M420 500 L300 610 L350 760 L470 760 Z" fill="#2c3d3d"/>
+  <path d="M760 470 L900 510 L910 760 L650 760 Z" fill="#2c3d3d"/>
+  <circle cx="1120" cy="430" r="90" fill="#f0d0a0"/>
+  <path d="M1060 470 Q1120 560 1180 470 L1200 760 L1040 760 Z" fill="#4dd0ff"/>
+  <path d="M1180 500 L1320 475 L1390 760 L1200 760 Z" fill="#4dd0ff"/>
+  <circle cx="645" cy="350" r="36" fill="#1c1d20"/>
+  <circle cx="1185" cy="350" r="32" fill="#1c1d20"/>
+  <text x="800" y="200" text-anchor="middle" font-family="Arial, sans-serif" font-size="84" font-weight="700" fill="#ffffff">SOCCER</text>
+  <text x="800" y="280" text-anchor="middle" font-family="Arial, sans-serif" font-size="46" fill="#f2f7f2" opacity="0.9">Training Photo 1</text>
+</svg>
