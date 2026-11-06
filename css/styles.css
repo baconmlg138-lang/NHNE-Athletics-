@@ -213,24 +213,46 @@
   }
   .event-flash[hidden]{display:none!important;}
   .event-flash-inner{
-    display:grid;gap:18px;align-items:center;
-    padding:18px 20px 20px;
+    display:grid;gap:16px;align-items:center;
+    padding:16px 20px 18px;
+  }
+  .event-flash-preview{
+    display:block;width:100%;max-width:420px;justify-self:start;
+    line-height:0;overflow:hidden;
+    border:1px solid rgba(232,199,102,.35);
+    transition:transform .2s ease,border-color .2s ease;
+  }
+  .event-flash-preview img{
+    width:100%;height:auto;aspect-ratio:1024/515;object-fit:cover;
+  }
+  .event-flash-preview:hover{
+    border-color:var(--gold-lt);
+    transform:translateY(-1px);
   }
   .event-flash-tag{
-    margin:0 0 6px;font-size:11px;font-weight:800;letter-spacing:2.4px;
+    margin:0 0 6px;
+    font-family:'Anton',Impact,sans-serif;font-weight:400;
+    font-size:15px;letter-spacing:.6px;line-height:1;
     text-transform:uppercase;color:var(--gold-lt);
   }
   .event-flash-title{
-    margin:0 0 6px;font-size:clamp(20px,4.5vw,28px);letter-spacing:.4px;
-    text-transform:uppercase;line-height:1.08;color:#fff;
+    margin:0 0 6px;
+    font-family:'Anton',Impact,sans-serif;font-weight:400;
+    font-size:clamp(22px,4.5vw,30px);letter-spacing:.5px;
+    text-transform:uppercase;line-height:1.05;color:#fff;
   }
   .event-flash-meta{
-    margin:0;font-size:13.5px;font-weight:600;color:rgba(255,255,255,.78);
+    margin:0;
+    font-family:'Anton',Impact,sans-serif;font-weight:400;
+    font-size:14px;letter-spacing:.4px;line-height:1.25;
+    text-transform:uppercase;color:rgba(255,255,255,.78);
   }
   .event-flash-timer{min-width:0;}
   .event-flash-timer-label{
-    margin:0 0 8px;font-size:11px;font-weight:800;letter-spacing:2px;
-    text-transform:uppercase;color:rgba(255,255,255,.65);
+    margin:0 0 8px;
+    font-family:'Anton',Impact,sans-serif;font-weight:400;
+    font-size:14px;letter-spacing:.6px;line-height:1;
+    text-transform:uppercase;color:rgba(255,255,255,.7);
   }
   .event-flash-units{
     display:flex;flex-wrap:wrap;gap:8px;
@@ -242,16 +264,21 @@
     text-align:center;
   }
   .event-flash-unit span{
-    display:block;font-family:'Anton',Impact,sans-serif;
+    display:block;font-family:'Anton',Impact,sans-serif;font-weight:400;
     font-size:28px;line-height:1;letter-spacing:.5px;color:var(--gold-lt);
     font-variant-numeric:tabular-nums;
   }
   .event-flash-unit small{
-    display:block;margin-top:3px;font-size:10px;font-weight:800;
-    letter-spacing:1.6px;text-transform:uppercase;color:rgba(255,255,255,.62);
+    display:block;margin-top:4px;
+    font-family:'Anton',Impact,sans-serif;font-weight:400;
+    font-size:11px;letter-spacing:.5px;line-height:1;
+    text-transform:uppercase;color:rgba(255,255,255,.62);
   }
   .event-flash-live{
-    margin:0;font-size:15px;font-weight:700;color:var(--gold-lt);
+    margin:0;
+    font-family:'Anton',Impact,sans-serif;font-weight:400;
+    font-size:18px;letter-spacing:.4px;line-height:1.2;
+    text-transform:uppercase;color:var(--gold-lt);
   }
   .event-flash-live[hidden],
   .event-flash-units[hidden],
@@ -266,12 +293,14 @@
   }
   @media (prefers-reduced-motion:reduce){
     .event-flash.is-visible{animation:none;}
+    .event-flash-preview:hover{transform:none;}
   }
   @media (min-width:820px){
     .event-flash-inner{
-      grid-template-columns:minmax(0,1.3fr) auto auto;
-      gap:28px;padding:16px 20px;
+      grid-template-columns:minmax(180px,260px) minmax(0,1.2fr) auto auto;
+      gap:22px;padding:14px 20px;
     }
+    .event-flash-preview{max-width:none;}
     .event-flash-cta{justify-self:end;}
   }
 
@@ -1253,6 +1282,21 @@
   }
   .enews-meta{
     margin:0 0 12px;font-size:14px;font-weight:700;color:var(--muted);
+  }
+  .enews-preview{
+    display:block;margin:0 0 16px;line-height:0;overflow:hidden;
+    border:1px solid var(--line);
+    transition:border-color .2s ease,transform .2s ease;
+  }
+  .enews-preview img{
+    width:100%;height:auto;aspect-ratio:1024/515;object-fit:cover;
+  }
+  .enews-preview:hover{
+    border-color:var(--gold);
+    transform:translateY(-1px);
+  }
+  @media (prefers-reduced-motion:reduce){
+    .enews-preview:hover{transform:none;}
   }
   .enews-body > p:not(.enews-tag):not(.enews-meta){
     color:var(--muted);margin:0 0 18px;max-width:54ch;
