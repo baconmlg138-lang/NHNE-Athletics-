@@ -255,16 +255,17 @@
   .event-flash-mesh:hover img{transform:scale(1.07);}
   .event-flash-inner{
     position:relative;z-index:1;
+    width:100%;
     display:flex;flex-wrap:wrap;align-items:center;
-    justify-content:space-between;gap:18px 28px;
+    justify-content:space-between;gap:20px 48px;
     padding:16px 20px 18px;
   }
   .event-flash-copy{
-    flex:1 1 220px;min-width:0;max-width:28rem;
+    flex:1 1 260px;min-width:0;
   }
   .event-flash-aside{
-    display:flex;flex-wrap:wrap;align-items:center;
-    gap:16px 22px;flex:0 1 auto;margin-left:auto;
+    display:flex;flex-wrap:nowrap;align-items:center;
+    gap:18px 24px;flex:0 0 auto;margin-left:auto;
   }
   .event-flash-tag{
     margin:0 0 5px;
@@ -272,19 +273,16 @@
     font-size:14px;letter-spacing:.6px;line-height:1;
     text-transform:uppercase;color:var(--gold-lt);
   }
-  .event-flash-title{
+  .event-flash-title,
+  .event-flash-sub{
     margin:0;
     font-family:'Anton',Impact,sans-serif;font-weight:400;
     font-size:clamp(24px,3.2vw,32px);letter-spacing:.5px;
-    text-transform:uppercase;line-height:1;color:#fff;
+    text-transform:uppercase;line-height:1.02;color:#fff;
     white-space:nowrap;
   }
   .event-flash-sub{
-    margin:4px 0 6px;
-    font-family:'Anton',Impact,sans-serif;font-weight:400;
-    font-size:clamp(15px,2vw,18px);letter-spacing:.5px;line-height:1.1;
-    text-transform:uppercase;color:rgba(255,255,255,.9);
-    white-space:nowrap;
+    margin:5px 0 7px;
   }
   .event-flash-meta{
     margin:0;
@@ -370,19 +368,24 @@
     }
     .event-flash-mesh img{object-position:center 32%;}
     .event-flash-inner{padding:12px 20px 18px;}
-    .event-flash-aside{margin-left:0;width:100%;}
+    .event-flash-aside{
+      margin-left:0;width:100%;
+      flex-wrap:wrap;
+    }
     .event-flash-title,
     .event-flash-sub,
     .event-flash-meta{white-space:normal;}
-    .event-flash-title{font-size:clamp(22px,6vw,28px);line-height:1.05;}
+    .event-flash-title,
+    .event-flash-sub{font-size:clamp(22px,6vw,28px);line-height:1.05;}
   }
   @media (min-width:820px){
     .event-flash-inner{
-      padding:18px 24px 18px clamp(210px, 30vw, 380px);
-      gap:24px 36px;
+      padding:18px clamp(24px, 3vw, 40px) 18px clamp(200px, 26vw, 340px);
+      gap:32px 64px;
       flex-wrap:nowrap;
     }
-    .event-flash-copy{flex:0 1 auto;max-width:none;}
+    .event-flash-copy{flex:1 1 auto;min-width:0;}
+    .event-flash-aside{flex:0 0 auto;margin-left:auto;}
   }
 
   /* ---------- hero ---------- */
