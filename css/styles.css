@@ -532,7 +532,7 @@
     z-index:2;
     opacity:0;
     transform:translateX(36px);
-    transition:opacity 0.1s ease, transform 0.1s ease;
+    transition:opacity 1.15s ease, transform 1.15s ease;
     will-change:opacity,transform;
   }
   .duo-character-wrap.is-in{
