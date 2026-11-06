@@ -6,20 +6,28 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>NHNE Athletics</title>
-<meta name="description" content="NHNE Athletics — Beyond the Finish Line. Training the mind, body, and spirit through sport in Atlanta, Georgia.">
+<title>NHNE Athletics | Faith-Based Sports Mentorship in Atlanta</title>
+<meta name="description" content="NHNE Athletics trains the mind, body, and spirit through sport in Atlanta — athlete mentorship, heavenly culture curriculum, Bible studies, outreach, and free community events like Beyond the Finish Line 5K.">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+<meta name="author" content="NHNE Athletics">
+<meta name="geo.region" content="US-GA">
+<meta name="geo.placename" content="Atlanta">
 <link rel="canonical" href="https://nhneathletics.org/">
-<meta property="og:title" content="NHNE Athletics">
-<meta property="og:description" content="Beyond the Finish Line. Mentorship, heavenly culture curriculum, and sport-based outreach in Atlanta.">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="NHNE Athletics | Faith-Based Sports Mentorship in Atlanta">
+<meta property="og:description" content="Beyond the Finish Line. Mentorship, heavenly culture curriculum, and sport-based outreach for athletes of faith in Atlanta, Georgia.">
 <meta property="og:url" content="https://nhneathletics.org/">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://nhneathletics.org/assets/images/hero-poster.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="NHNE Athletics — Beyond the Finish Line">
 <meta property="og:site_name" content="NHNE Athletics">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="NHNE Athletics">
-<meta name="twitter:description" content="Beyond the Finish Line. Mentorship, heavenly culture curriculum, and sport-based outreach in Atlanta.">
+<meta name="twitter:title" content="NHNE Athletics | Faith-Based Sports Mentorship in Atlanta">
+<meta name="twitter:description" content="Beyond the Finish Line. Mentorship, heavenly culture curriculum, and sport-based outreach for athletes of faith in Atlanta, Georgia.">
 <meta name="twitter:image" content="https://nhneathletics.org/assets/images/hero-poster.jpg">
+<meta name="twitter:image:alt" content="NHNE Athletics — Beyond the Finish Line">
 <meta name="theme-color" content="#0B1F3E">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png?v=2">
 <link rel="icon" type="image/png" sizes="192x192" href="assets/images/favicon-192x192.png?v=2">
@@ -33,23 +41,90 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "SportsOrganization",
-  "name": "NHNE Athletics",
-  "alternateName": "New Heaven New Earth Athletics",
-  "url": "https://nhneathletics.org/",
-  "logo": "https://nhneathletics.org/assets/images/logo.png",
-  "image": "https://nhneathletics.org/assets/images/hero-poster.jpg",
-  "description": "Training the mind, body, and spirit through sport — building athletes of faith, purpose, and character in Atlanta, Georgia.",
-  "email": "hello@nhneathletics.org",
-  "address": {
-    "@type": "PostalAddress",
-    "addressLocality": "Atlanta",
-    "addressRegion": "GA",
-    "addressCountry": "US"
-  },
-  "areaServed": "Atlanta, Georgia",
-  "sameAs": [
-    "https://www.instagram.com/nhneathletics/"
+  "@graph": [
+    {
+      "@type": "SportsOrganization",
+      "@id": "https://nhneathletics.org/#organization",
+      "name": "NHNE Athletics",
+      "alternateName": ["New Heaven New Earth Athletics", "NHNE"],
+      "url": "https://nhneathletics.org/",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://nhneathletics.org/assets/images/logo.png"
+      },
+      "image": "https://nhneathletics.org/assets/images/hero-poster.jpg",
+      "description": "Training the mind, body, and spirit through sport — building athletes of faith, purpose, and character in Atlanta, Georgia.",
+      "email": "hello@nhneathletics.org",
+      "slogan": "Beyond the Finish Line",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Atlanta",
+        "addressRegion": "GA",
+        "addressCountry": "US"
+      },
+      "areaServed": {
+        "@type": "Place",
+        "name": "Atlanta, Georgia"
+      },
+      "knowsAbout": [
+        "Athlete mentorship",
+        "Faith-based sports",
+        "Sports ministry",
+        "Youth athletics",
+        "Community 5K"
+      ],
+      "sameAs": [
+        "https://www.instagram.com/nhneathletics/",
+        "https://www.eventbrite.com/o/nhne-17120258750"
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://nhneathletics.org/#website",
+      "url": "https://nhneathletics.org/",
+      "name": "NHNE Athletics",
+      "description": "Faith-based sports mentorship and athlete development in Atlanta, Georgia.",
+      "publisher": {
+        "@id": "https://nhneathletics.org/#organization"
+      },
+      "inLanguage": "en-US"
+    },
+    {
+      "@type": "Event",
+      "@id": "https://nhneathletics.org/events.html#beyond-the-finish-line-5k-2026",
+      "name": "Beyond the Finish Line: 1st Annual 5k Run/Walk",
+      "description": "A free community 5k run/walk celebrating wellness, connection, and the local leaders making a difference beyond the finish line.",
+      "image": "https://nhneathletics.org/assets/images/event-5k-beyond-finish-line.jpg",
+      "startDate": "2026-11-07T08:00:00-05:00",
+      "endDate": "2026-11-07T10:00:00-05:00",
+      "eventStatus": "https://schema.org/EventScheduled",
+      "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+      "isAccessibleForFree": true,
+      "url": "https://www.eventbrite.com/e/beyond-the-finish-line-1st-annual-runwalk-tickets-2004051285342",
+      "organizer": {
+        "@id": "https://nhneathletics.org/#organization"
+      },
+      "location": {
+        "@type": "Place",
+        "name": "Pinckneyville Park",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "4758 South Old Peachtree Road",
+          "addressLocality": "Peachtree Corners",
+          "addressRegion": "GA",
+          "postalCode": "30071",
+          "addressCountry": "US"
+        }
+      },
+      "offers": {
+        "@type": "Offer",
+        "url": "https://www.eventbrite.com/e/beyond-the-finish-line-1st-annual-runwalk-tickets-2004051285342",
+        "price": "0",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock",
+        "validFrom": "2026-01-01"
+      }
+    }
   ]
 }
 </script>
@@ -391,7 +466,7 @@
           <a class="btn btn-navy" href="contact.html">Partner With Us</a>
         </div>
         <div class="duo-character-wrap" data-duo-character>
-          <img class="duo-character" src="assets/images/cta-athlete-cutout.png" alt="" width="700" height="700" decoding="async">
+          <img class="duo-character" src="assets/images/cta-athlete-cutout.png" alt="Athlete in motion representing NHNE Athletics mentorship and training" width="700" height="700" decoding="async">
         </div>
       </div>
     </div>

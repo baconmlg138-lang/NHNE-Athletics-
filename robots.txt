@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
 
+# Keep archive / error pages out of the index
+Disallow: /nhne-athletics-website.html
+Disallow: /404.html
+
 Sitemap: https://nhneathletics.org/sitemap.xml
