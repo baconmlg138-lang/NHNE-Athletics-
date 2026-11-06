@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Caveat:wght@500;600;700&family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=5">
+<link rel="stylesheet" href="css/styles.css?v=6">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -217,6 +217,41 @@
 </header>
 
 <main id="top">
+
+  <!-- Limited-time event flash (auto-hides after Sun Nov 8, 2026 12:00 PM ET) -->
+  <aside
+    id="event-flash"
+    class="event-flash"
+    data-event-flash
+    data-event-at="2026-11-07T08:00:00-05:00"
+    data-hide-at="2026-11-08T12:00:00-05:00"
+    hidden
+    aria-label="Upcoming event"
+  >
+    <div class="wrap event-flash-inner">
+      <div class="event-flash-copy">
+        <p class="event-flash-tag">Upcoming · Free</p>
+        <h2 class="event-flash-title">Beyond the Finish Line: 1st Annual 5k Run/Walk</h2>
+        <p class="event-flash-meta">Nov 7 · 8:00 AM · Pinckneyville Park, Peachtree Corners</p>
+      </div>
+      <div class="event-flash-timer" data-event-countdown aria-live="polite">
+        <p class="event-flash-timer-label" data-countdown-label>Starts in</p>
+        <div class="event-flash-units" data-countdown-units>
+          <div class="event-flash-unit"><span data-cd="days">00</span><small>Days</small></div>
+          <div class="event-flash-unit"><span data-cd="hours">00</span><small>Hrs</small></div>
+          <div class="event-flash-unit"><span data-cd="mins">00</span><small>Min</small></div>
+          <div class="event-flash-unit"><span data-cd="secs">00</span><small>Sec</small></div>
+        </div>
+        <p class="event-flash-live" data-countdown-live hidden>It's race day — see you at the park.</p>
+      </div>
+      <a
+        class="btn btn-gold event-flash-cta"
+        href="https://www.eventbrite.com/e/beyond-the-finish-line-1st-annual-runwalk-tickets-2004051285342"
+        target="_blank"
+        rel="noopener"
+      >Reserve a Spot</a>
+    </div>
+  </aside>
 
   <!-- HERO -->
   <section class="hero">
@@ -567,6 +602,6 @@
   </div>
 </footer>
 
-<script src="js/main.js?v=4"></script>
+<script src="js/main.js?v=5"></script>
 </body>
 </html>

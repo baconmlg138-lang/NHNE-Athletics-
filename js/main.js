@@ -856,4 +856,76 @@
 
       figures.forEach(function(el){io.observe(el);});
     })();
+
+    // ---- Homepage event flash + countdown (auto-hides after hide-at) ----
+    (function(){
+      var flash=document.querySelector('[data-event-flash]');
+      if(!flash) return;
+
+      var eventAt=Date.parse(flash.getAttribute('data-event-at')||'');
+      var hideAt=Date.parse(flash.getAttribute('data-hide-at')||'');
+      if(!eventAt||!hideAt) return;
+
+      var label=flash.querySelector('[data-countdown-label]');
+      var units=flash.querySelector('[data-countdown-units]');
+      var live=flash.querySelector('[data-countdown-live]');
+      var daysEl=flash.querySelector('[data-cd="days"]');
+      var hoursEl=flash.querySelector('[data-cd="hours"]');
+      var minsEl=flash.querySelector('[data-cd="mins"]');
+      var secsEl=flash.querySelector('[data-cd="secs"]');
+      var timerId=null;
+
+      function pad(n){return n<10?'0'+n:String(n);}
+
+      function hideFlash(){
+        if(timerId){clearInterval(timerId);timerId=null;}
+        flash.hidden=true;
+        flash.classList.remove('is-visible');
+      }
+
+      function showLive(){
+        if(label) label.hidden=true;
+        if(units) units.hidden=true;
+        if(live) live.hidden=false;
+      }
+
+      function showCountdown(){
+        if(label) label.hidden=false;
+        if(units) units.hidden=false;
+        if(live) live.hidden=true;
+      }
+
+      function tick(){
+        var now=Date.now();
+        if(now>=hideAt){
+          hideFlash();
+          return;
+        }
+
+        flash.hidden=false;
+        flash.classList.add('is-visible');
+
+        if(now>=eventAt){
+          showLive();
+          return;
+        }
+
+        showCountdown();
+        var diff=eventAt-now;
+        var totalSec=Math.floor(diff/1000);
+        var days=Math.floor(totalSec/86400);
+        var hours=Math.floor((totalSec%86400)/3600);
+        var mins=Math.floor((totalSec%3600)/60);
+        var secs=totalSec%60;
+        if(daysEl) daysEl.textContent=pad(days);
+        if(hoursEl) hoursEl.textContent=pad(hours);
+        if(minsEl) minsEl.textContent=pad(mins);
+        if(secsEl) secsEl.textContent=pad(secs);
+      }
+
+      tick();
+      if(!flash.hidden){
+        timerId=setInterval(tick,1000);
+      }
+    })();
   })();
