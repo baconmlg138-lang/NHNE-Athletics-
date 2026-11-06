@@ -1283,20 +1283,24 @@
   .enews-meta{
     margin:0 0 12px;font-size:14px;font-weight:700;color:var(--muted);
   }
-  .enews-preview{
-    display:block;margin:0 0 16px;line-height:0;overflow:hidden;
+  .enews-flyer{
+    margin:4px 0 18px;padding:0;max-width:640px;
+  }
+  .enews-flyer a{
+    display:block;line-height:0;overflow:hidden;
     border:1px solid var(--line);
     transition:border-color .2s ease,transform .2s ease;
   }
-  .enews-preview img{
+  .enews-flyer img{
     width:100%;height:auto;aspect-ratio:1024/515;object-fit:cover;
+    background:#FDEF10;
   }
-  .enews-preview:hover{
+  .enews-flyer a:hover{
     border-color:var(--gold);
     transform:translateY(-1px);
   }
   @media (prefers-reduced-motion:reduce){
-    .enews-preview:hover{transform:none;}
+    .enews-flyer a:hover{transform:none;}
   }
   .enews-body > p:not(.enews-tag):not(.enews-meta){
     color:var(--muted);margin:0 0 18px;max-width:54ch;
