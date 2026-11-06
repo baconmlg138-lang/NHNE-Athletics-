@@ -215,30 +215,30 @@
   /* Flyer meshed into far-left edge — soft mask fade (no hard seam) */
   .event-flash-mesh{
     position:absolute;left:0;top:0;bottom:0;
-    width:min(52vw,580px);z-index:0;
+    width:min(38vw,420px);z-index:0;
     display:block;overflow:hidden;
     -webkit-mask-image:linear-gradient(
       90deg,
       #000 0%,
-      #000 22%,
-      rgba(0,0,0,.92) 38%,
-      rgba(0,0,0,.55) 62%,
-      rgba(0,0,0,.18) 82%,
+      #000 28%,
+      rgba(0,0,0,.85) 48%,
+      rgba(0,0,0,.4) 70%,
+      rgba(0,0,0,.12) 88%,
       transparent 100%
     );
     mask-image:linear-gradient(
       90deg,
       #000 0%,
-      #000 22%,
-      rgba(0,0,0,.92) 38%,
-      rgba(0,0,0,.55) 62%,
-      rgba(0,0,0,.18) 82%,
+      #000 28%,
+      rgba(0,0,0,.85) 48%,
+      rgba(0,0,0,.4) 70%,
+      rgba(0,0,0,.12) 88%,
       transparent 100%
     );
   }
   .event-flash-mesh img{
     width:100%;height:100%;
-    object-fit:cover;object-position:18% center;
+    object-fit:cover;object-position:12% center;
     transform:scale(1.04);
     transition:transform .45s ease;
   }
@@ -246,9 +246,9 @@
     content:"";position:absolute;inset:0;
     background:linear-gradient(
       90deg,
-      rgba(7,21,39,.12) 0%,
-      rgba(7,21,39,.28) 45%,
-      rgba(7,21,39,.5) 100%
+      rgba(7,21,39,.1) 0%,
+      rgba(7,21,39,.25) 45%,
+      rgba(7,21,39,.45) 100%
     );
     pointer-events:none;
   }
@@ -256,16 +256,19 @@
   .event-flash-inner{
     position:relative;z-index:1;
     width:100%;
+    max-width:1240px;
+    margin:0 auto;
     display:flex;flex-wrap:wrap;align-items:center;
-    justify-content:space-between;gap:20px 48px;
-    padding:16px 20px 18px;
+    justify-content:flex-start;gap:20px 40px;
+    padding:16px 28px 18px;
   }
   .event-flash-copy{
-    flex:1 1 260px;min-width:0;
+    flex:0 1 auto;min-width:0;
   }
   .event-flash-aside{
     display:flex;flex-wrap:nowrap;align-items:center;
-    gap:18px 24px;flex:0 0 auto;margin-left:auto;
+    gap:18px 22px;flex:0 0 auto;
+    margin-left:clamp(28px, 4vw, 56px);
   }
   .event-flash-tag{
     margin:0 0 5px;
@@ -380,12 +383,16 @@
   }
   @media (min-width:820px){
     .event-flash-inner{
-      padding:18px clamp(24px, 3vw, 40px) 18px clamp(200px, 26vw, 340px);
-      gap:32px 64px;
+      padding:18px 36px 18px clamp(250px, 32vw, 400px);
+      gap:24px 44px;
       flex-wrap:nowrap;
+      justify-content:flex-start;
     }
-    .event-flash-copy{flex:1 1 auto;min-width:0;}
-    .event-flash-aside{flex:0 0 auto;margin-left:auto;}
+    .event-flash-copy{flex:0 1 auto;}
+    .event-flash-aside{
+      flex:0 0 auto;
+      margin-left:clamp(36px, 5vw, 72px);
+    }
   }
 
   /* ---------- hero ---------- */
