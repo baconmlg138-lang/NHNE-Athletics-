@@ -1332,6 +1332,11 @@
   .gallery-sport-media img{
     width:100%;height:clamp(220px,48vw,420px);object-fit:cover;display:block;
   }
+  .gallery-sport-pair{
+    display:grid;grid-template-columns:1fr 1fr;gap:3px;background:var(--line);
+  }
+  .gallery-sport-pair .ig-cell{aspect-ratio:4/3;}
+  .gallery-sport-pair .ig-cell img{height:100%;}
   .gallery-sport-copy .sec-h{font-size:clamp(28px,4vw,40px);margin-bottom:10px;}
   .gallery-sport-copy .lead{margin:0;}
   @media (min-width:700px){
