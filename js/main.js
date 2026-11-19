@@ -415,6 +415,151 @@
       });
     })();
 
+    // ---- seamless gallery preview strip (auto-scroll + drag + click links) ----
+    (function(){
+      var roots=Array.prototype.slice.call(document.querySelectorAll('.gstrip'));
+      if(!roots.length) return;
+      var reduce=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+      roots.forEach(function(root){
+        var scroller=root.querySelector('.gstrip-scroller');
+        var track=root.querySelector('.gstrip-track');
+        var pill=root.querySelector('.gstrip-pill');
+        if(!scroller||!track) return;
+
+        var originals=Array.prototype.slice.call(track.children);
+        if(!originals.length) return;
+        originals.forEach(function(card){
+          var clone=card.cloneNode(true);
+          clone.setAttribute('aria-hidden','true');
+          clone.removeAttribute('id');
+          var img=clone.querySelector('img');
+          if(img){img.alt=''; img.removeAttribute('fetchpriority');}
+          track.appendChild(clone);
+        });
+
+        var setCount=originals.length;
+        var offset=0;
+        var dragging=false;
+        var moved=false;
+        var startX=0;
+        var startOffset=0;
+        var idle=true;
+        var inView=true;
+        var resumeTimer=null;
+        var ready=false;
+        var speed=0.45;
+
+        function unitWidth(){
+          var cards=track.children;
+          if(cards.length<setCount+1) return 0;
+          var first=cards[0];
+          var secondSet=cards[setCount];
+          if(!first||!secondSet) return 0;
+          var width=secondSet.offsetLeft-first.offsetLeft;
+          return width>1?width:0;
+        }
+
+        function normalize(value){
+          var unit=unitWidth();
+          if(unit<=1) return value;
+          value=value%unit;
+          if(value<0) value+=unit;
+          return value;
+        }
+
+        function apply(){
+          offset=normalize(offset);
+          track.style.transform='translate3d('+(-offset)+'px,0,0)';
+          if(!pill) return;
+          var unit=unitWidth();
+          var meter=pill.parentElement;
+          if(!unit||!meter) return;
+          var travel=Math.max(0,meter.clientWidth-pill.offsetWidth);
+          pill.style.transform='translateX('+((offset/unit)*travel)+'px)';
+        }
+
+        function measure(){
+          if(!track.children.length) return;
+          var card=track.children[0];
+          ready=!!(card&&card.offsetWidth>1&&card.offsetHeight>1&&unitWidth()>1);
+          apply();
+        }
+
+        function tick(){
+          if(idle&&!dragging&&!reduce&&ready&&inView){
+            offset+=speed;
+            apply();
+          }
+          requestAnimationFrame(tick);
+        }
+
+        function pause(){idle=false;if(resumeTimer){clearTimeout(resumeTimer);resumeTimer=null;}}
+        function resumeLater(){if(reduce)return;if(resumeTimer)clearTimeout(resumeTimer);resumeTimer=setTimeout(function(){idle=true;},1200);}
+
+        scroller.addEventListener('pointerdown',function(e){
+          if(e.pointerType==='mouse'&&e.button!==0) return;
+          pause();dragging=true;moved=false;startX=e.clientX;startOffset=offset;
+          scroller.classList.add('is-dragging');
+          try{scroller.setPointerCapture(e.pointerId);}catch(_){}
+        });
+
+        scroller.addEventListener('pointermove',function(e){
+          if(!dragging) return;
+          var dx=e.clientX-startX;
+          if(Math.abs(dx)>3) moved=true;
+          offset=startOffset-dx;apply();
+          if(e.cancelable) e.preventDefault();
+        },{passive:false});
+
+        function endDrag(e){
+          if(!dragging)return;
+          dragging=false;scroller.classList.remove('is-dragging');
+          try{if(e)scroller.releasePointerCapture(e.pointerId);}catch(_){}
+          resumeLater();
+        }
+        scroller.addEventListener('pointerup',endDrag);
+        scroller.addEventListener('pointercancel',endDrag);
+
+        scroller.addEventListener('click',function(e){
+          if(moved){e.preventDefault();e.stopPropagation();moved=false;return;}
+          var card=e.target.closest?e.target.closest('a.gcard'):null;
+          if(card&&card.getAttribute('href')){
+            e.preventDefault();e.stopPropagation();
+            window.location.href=card.getAttribute('href');
+          }
+        },true);
+
+        scroller.addEventListener('wheel',function(e){
+          var dx=Math.abs(e.deltaX)>Math.abs(e.deltaY)?e.deltaX:e.deltaY;
+          if(!dx)return;
+          offset+=dx;apply();pause();resumeLater();
+          if(e.cancelable)e.preventDefault();
+        },{passive:false});
+
+        scroller.addEventListener('mouseenter',pause);
+        scroller.addEventListener('mouseleave',resumeLater);
+
+        if(typeof IntersectionObserver!=='undefined'){
+          var observer=new IntersectionObserver(function(entries){inView=entries.some(function(entry){return entry.isIntersecting;});},{threshold:.15});
+          observer.observe(root);
+        }
+
+        window.addEventListener('resize',measure);
+        window.addEventListener('load',measure);
+        if(typeof ResizeObserver!=='undefined'){
+          var resizeObserver=new ResizeObserver(measure);
+          resizeObserver.observe(track);resizeObserver.observe(scroller);
+        }
+        track.querySelectorAll('img').forEach(function(img){
+          if(img.complete)measure();else{img.addEventListener('load',measure,{once:true});img.addEventListener('error',measure,{once:true});}
+        });
+        measure();
+        requestAnimationFrame(measure);
+        if(!reduce)requestAnimationFrame(tick);
+      });
+    })();
+
     // ---- carousel (home / shared) ----
     (function(){
       var c=document.getElementById('carousel'); if(!c) return;
@@ -447,214 +592,7 @@
         if(Math.abs(dx)>40){go(dx<0?i+1:i-1);}
         x0=null;start();
       },{passive:true});
-      // Static or third-party carousel cards should also behave as links.
-      if(typeof track!=='undefined'){
-        [].slice.call(track.querySelectorAll('.gcard')).forEach(function(card){
-          var img=card.querySelector('img');
-          var isFootball=card.getAttribute('data-sport')==='football'||(img&&/gallery-football\.jpg/.test(img.getAttribute('src')||''));
-          if(!isFootball||card.tagName.toLowerCase()==='a') return;
-          card.setAttribute('role','link');
-          card.setAttribute('tabindex','0');
-          card.style.cursor='pointer';
-          card.addEventListener('click',function(){ window.location.href='gallery.html#football'; });
-          card.addEventListener('keydown',function(event){
-            if(event.key==='Enter'||event.key===' '){
-              event.preventDefault();
-              window.location.href='gallery.html#football';
-            }
-          });
-        });
-      }
-
-      var offset=0;
-      var dragging=false;
-      var moved=false;
-      var linkHref='';
-
-      var startX=0;
-      var startY=0;
-      var startOffset=0;
-      var axis=null; // 'x' | 'y' — lock gesture direction on touch
-      var idle=true;
-      var inView=true;
-      var resumeTimer=null;
-      var ready=false;
-      var SPEED=0.45; // px per frame — slightly snappier on mobile screens
-
-      function unitWidth(){
-        var cards=track.children;
-        if(cards.length<setCount+1) return 0;
-        var a=cards[0];
-        var b=cards[setCount];
-        if(!a||!b) return 0;
-        var w=b.offsetLeft-a.offsetLeft;
-        return w>1?w:0;
-      }
-
-      function normalize(v){
-        var unit=unitWidth();
-        if(unit<=1) return v;
-        v=v%unit;
-        if(v<0) v+=unit;
-        return v;
-      }
-
-      function apply(){
-        offset=normalize(offset);
-        track.style.transform='translate3d('+(-offset)+'px,0,0)';
-        if(!pill) return;
-        var unit=unitWidth();
-        if(unit<=0) return;
-        var meter=pill.parentElement;
-        if(!meter) return;
-        var travel=Math.max(0, meter.clientWidth-pill.offsetWidth);
-        var t=unit?offset/unit:0;
-        pill.style.transform='translateX('+(t*travel)+'px)';
-      }
-
-      function cardsHaveSize(){
-        var card=track.children[0];
-        return !!(card && card.offsetWidth>1 && card.offsetHeight>1);
-      }
-
-      function measure(){
-        if(!cardsHaveSize() || unitWidth()<=1) return;
-        ready=true;
-        apply();
-      }
-
-      function tick(){
-        if(idle && !dragging && !reduce && ready && inView){
-          offset+=SPEED;
-          apply();
-        }
-        requestAnimationFrame(tick);
-      }
-
-      function pauseIdle(){
-        idle=false;
-        if(resumeTimer){clearTimeout(resumeTimer);resumeTimer=null;}
-      }
-
-      function scheduleResume(){
-        if(reduce) return;
-        if(resumeTimer) clearTimeout(resumeTimer);
-        resumeTimer=setTimeout(function(){idle=true;}, 1200);
-      }
-
-      scroller.addEventListener('pointerdown',function(e){
-        if(e.pointerType==='mouse' && e.button!==0) return;
-        linkHref='';
-        var card=e.target.closest ? e.target.closest('a.gcard') : null;
-        if(card) linkHref=card.getAttribute('href')||'';
-        pauseIdle();
-        dragging=true;
-        moved=false;
-        axis=null;
-        startX=e.clientX;
-        startY=e.clientY;
-        startOffset=offset;
-        scroller.classList.add('is-dragging');
-        try{scroller.setPointerCapture(e.pointerId);}catch(_){}
-      });
-
-      scroller.addEventListener('pointermove',function(e){
-        if(!dragging) return;
-        var dx=e.clientX-startX;
-        var dy=e.clientY-startY;
-        if(!axis){
-          if(Math.abs(dx)<4 && Math.abs(dy)<4) return;
-          // Prefer vertical page scroll when the gesture is mostly vertical
-          axis=Math.abs(dx)>Math.abs(dy)?'x':'y';
-          if(axis==='y'){
-            dragging=false;
-            scroller.classList.remove('is-dragging');
-            try{scroller.releasePointerCapture(e.pointerId);}catch(_){}
-            scheduleResume();
-            return;
-          }
-        }
-        if(axis!=='x') return;
-        if(Math.abs(dx)>3) moved=true;
-        offset=startOffset-dx;
-        apply();
-        if(e.cancelable) e.preventDefault();
-      },{passive:false});
-
-      function endDrag(e){
-        if(!dragging && axis!=='x') return;
-        dragging=false;
-        axis=null;
-        scroller.classList.remove('is-dragging');
-        try{if(e) scroller.releasePointerCapture(e.pointerId);}catch(_){}
-        scheduleResume();
-      }
-
-      scroller.addEventListener('pointerup',endDrag);
-      scroller.addEventListener('pointercancel',endDrag);
-      scroller.addEventListener('lostpointercapture',function(){
-        if(dragging){dragging=false;axis=null;scroller.classList.remove('is-dragging');scheduleResume();}
-      });
-
-      scroller.addEventListener('click',function(e){
-        if(moved){
-          e.preventDefault();
-          e.stopPropagation();
-          linkHref='';
-          return;
-        }
-        if(linkHref){
-          e.preventDefault();
-          e.stopPropagation();
-          var destination=linkHref;
-          linkHref='';
-          window.location.href=destination;
-        }
-      },true);
-
-      scroller.addEventListener('wheel',function(e){
-        var dx=e.deltaX;
-        var dy=e.deltaY;
-        if(Math.abs(dy)>Math.abs(dx)) dx=dy;
-        if(!dx) return;
-        offset+=dx;
-        apply();
-        pauseIdle();
-        scheduleResume();
-        e.preventDefault();
-      },{passive:false});
-
-      // Pause off-screen to save battery; resume when visible
-      if(typeof IntersectionObserver!=='undefined'){
-        var io=new IntersectionObserver(function(entries){
-          inView=entries.some(function(en){return en.isIntersecting;});
-        },{threshold:0.15});
-        io.observe(root);
-      }
-
-      var resizeTimer=null;
-      window.addEventListener('resize',function(){
-        clearTimeout(resizeTimer);
-        resizeTimer=setTimeout(measure, 120);
-      });
-
-      measure();
-      requestAnimationFrame(measure);
-      window.addEventListener('load',measure);
-
-      if(typeof ResizeObserver!=='undefined'){
-        var ro=new ResizeObserver(measure);
-        ro.observe(track);
-        ro.observe(scroller);
-      }
-
-      track.querySelectorAll('img').forEach(function(img){
-        if(img.complete) return;
-        img.addEventListener('load',measure,{once:true});
-        img.addEventListener('error',measure,{once:true});
-      });
-
-      if(!reduce) requestAnimationFrame(tick);
+      start();
     })();
 
     // ---- Our Why: verse reveal (tap toggle for touch / keyboard) ----
@@ -926,24 +864,4 @@
         timerId=setInterval(tick,1000);
       }
     })();
-  })();
-
-  // Ensure static Football preview cards behave like their linked sport peers.
-  (function(){
-    var cards=document.querySelectorAll('.gcard');
-    cards.forEach(function(card){
-      var img=card.querySelector('img');
-      var isFootball=card.getAttribute('data-sport')==='football'||(img&&/gallery-football\.jpg/.test(img.getAttribute('src')||''));
-      if(!isFootball||card.tagName.toLowerCase()==='a') return;
-      card.setAttribute('role','link');
-      card.setAttribute('tabindex','0');
-      card.style.cursor='pointer';
-      card.addEventListener('click',function(){ window.location.href='gallery.html#football'; });
-      card.addEventListener('keydown',function(event){
-        if(event.key==='Enter'||event.key===' '){
-          event.preventDefault();
-          window.location.href='gallery.html#football';
-        }
-      });
-    });
   })();
