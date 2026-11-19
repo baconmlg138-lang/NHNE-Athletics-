@@ -449,6 +449,7 @@
         var resumeTimer=null;
         var ready=false;
         var speed=0.45;
+        var linkHref='';
 
         function unitWidth(){
           var cards=track.children;
@@ -499,7 +500,9 @@
 
         scroller.addEventListener('pointerdown',function(e){
           if(e.pointerType==='mouse'&&e.button!==0) return;
-          pause();dragging=true;moved=false;startX=e.clientX;startOffset=offset;
+          pause();dragging=true;moved=false;linkHref='';startX=e.clientX;startOffset=offset;
+          var card=e.target.closest?e.target.closest('a.gcard'):null;
+          if(card) linkHref=card.getAttribute('href')||'';
           scroller.classList.add('is-dragging');
           try{scroller.setPointerCapture(e.pointerId);}catch(_){}
         });
@@ -518,7 +521,16 @@
           try{if(e)scroller.releasePointerCapture(e.pointerId);}catch(_){}
           resumeLater();
         }
-        scroller.addEventListener('pointerup',endDrag);
+        scroller.addEventListener('pointerup',function(e){
+          var destination=moved?'':linkHref;
+          endDrag(e);
+          if(destination){
+            if(e.cancelable) e.preventDefault();
+            linkHref='';
+            window.location.href=destination;
+          }
+        });
+
         scroller.addEventListener('pointercancel',endDrag);
 
         scroller.addEventListener('click',function(e){
