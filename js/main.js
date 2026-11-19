@@ -469,6 +469,8 @@
       var offset=0;
       var dragging=false;
       var moved=false;
+      var linkHref='';
+
       var startX=0;
       var startY=0;
       var startOffset=0;
@@ -542,6 +544,9 @@
 
       scroller.addEventListener('pointerdown',function(e){
         if(e.pointerType==='mouse' && e.button!==0) return;
+        linkHref='';
+        var card=e.target.closest ? e.target.closest('a.gcard') : null;
+        if(card) linkHref=card.getAttribute('href')||'';
         pauseIdle();
         dragging=true;
         moved=false;
@@ -595,6 +600,15 @@
         if(moved){
           e.preventDefault();
           e.stopPropagation();
+          linkHref='';
+          return;
+        }
+        if(linkHref){
+          e.preventDefault();
+          e.stopPropagation();
+          var destination=linkHref;
+          linkHref='';
+          window.location.href=destination;
         }
       },true);
 
