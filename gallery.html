@@ -229,10 +229,6 @@
     <div class="gstrip" id="gstrip" aria-label="Photo gallery">
       <div class="gstrip-scroller" id="gstrip-scroller" tabindex="0" role="region" aria-roledescription="carousel" aria-label="Drag or scroll to browse photos">
         <div class="gstrip-track" id="gstrip-track">
-          <figure class="gcard" data-sport="football">
-            <img src="assets/images/gallery-football.jpg" alt="Athlete leaping to catch a football" draggable="false" fetchpriority="high" decoding="sync">
-            <figcaption>Football</figcaption>
-          </figure>
           <a class="gcard" href="gallery-soccer.html" data-sport="soccer">
             <img src="assets/images/gallery-soccer.jpg" alt="Players competing for the ball in a soccer match" draggable="false" fetchpriority="high" decoding="sync">
             <span class="gcard-label">Soccer</span>
@@ -245,6 +241,10 @@
             <img src="assets/images/gallery-race.jpg" alt="Runner smiling and giving a thumbs-up in a tan shirt" draggable="false" fetchpriority="high" decoding="sync">
             <span class="gcard-label">Track and Marathon</span>
           </a>
+          <a class="gcard" href="gallery.html#football" data-sport="football">
+            <img src="assets/images/gallery-football.jpg" alt="Athlete leaping to catch a football" draggable="false" fetchpriority="high" decoding="sync">
+            <span class="gcard-label">Football</span>
+          </a>
         </div>
       </div>
       <div class="gstrip-meter" aria-hidden="true">
@@ -254,8 +254,13 @@
 
     <div class="wrap gallery-sports">
       <article class="gallery-sport" id="football">
-        <div class="gallery-sport-media">
-          <img src="assets/images/gallery-football.jpg" alt="Athlete leaping to catch a football" fetchpriority="high" decoding="sync">
+        <div class="gallery-sport-media gallery-sport-pair">
+          <a class="ig-cell" href="assets/images/gallery-football.jpg" data-lightbox aria-label="View athlete leaping to catch a football">
+            <img src="assets/images/gallery-football.jpg" alt="Athlete leaping to catch a football" fetchpriority="high" decoding="sync">
+          </a>
+          <a class="ig-cell" href="assets/images/gallery-football-group.jpg" data-lightbox aria-label="View football players posing with a football">
+            <img src="assets/images/gallery-football-group.jpg" alt="Three football players posing together with a football" fetchpriority="high" decoding="sync">
+          </a>
         </div>
         <div class="gallery-sport-copy">
           <span class="kick">01 · Football</span>
