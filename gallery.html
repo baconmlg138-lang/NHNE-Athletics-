@@ -1,4 +1,4 @@
-3<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -115,7 +115,7 @@
                   <a class="mega-card" href="gallery.html#football"><span class="do-num">01</span><span><strong>Football</strong></span></a>
                   <a class="mega-card" href="gallery-soccer.html"><span class="do-num">02</span><span><strong>Soccer</strong></span></a>
                   <a class="mega-card" href="gallery-basketball.html"><span class="do-num">03</span><span><strong>Basketball</strong></span></a>
-                  <a class="mega-card" href="gallery.html#track"><span class="do-num">04</span><span><strong>Track and Marathon</strong></span></a>
+                  <a class="mega-card" href="gallery-track.html"><span class="do-num">04</span><span><strong>Track and Marathon</strong></span></a>
                 </div>
               </div>
             </div>
@@ -187,7 +187,7 @@
           <li><a href="gallery.html#football">01 · Football</a></li>
           <li><a href="gallery-soccer.html">02 · Soccer</a></li>
           <li><a href="gallery-basketball.html">03 · Basketball</a></li>
-          <li><a href="gallery.html#track">04 · Track and Marathon</a></li>
+          <li><a href="gallery-track.html">04 · Track and Marathon</a></li>
         </ul>
       </li>
       <li>
@@ -241,10 +241,10 @@
             <img src="assets/images/gallery-basketball.jpg" alt="Player driving to the basket for a layup" draggable="false" fetchpriority="high" decoding="sync">
             <span class="gcard-label">Basketball</span>
           </a>
-          <figure class="gcard" data-sport="track">
-            <img src="assets/images/gallery-race.jpg" alt="Runners of all ages during a community road race" draggable="false" fetchpriority="high" decoding="sync">
-            <figcaption>Track and Marathon</figcaption>
-          </figure>
+          <a class="gcard" href="gallery-track.html" data-sport="track">
+            <img src="assets/images/event-5k-beyond-finish-line.jpg" alt="Runner holding up a V with his hand during the marathon" draggable="false" fetchpriority="high" decoding="sync">
+            <span class="gcard-label">Track and Marathon</span>
+          </a>
         </div>
       </div>
       <div class="gstrip-meter" aria-hidden="true">
@@ -286,18 +286,14 @@
         </div>
       </article>
       <article class="gallery-sport" id="track">
-        <div class="gallery-sport-media gallery-sport-pair">
-          <a class="ig-cell" href="assets/images/gallery-race.jpg" data-lightbox role="listitem" aria-label="View community road race photo">
-            <img src="assets/images/gallery-race.jpg" alt="Runners of all ages during a community road race" fetchpriority="high" decoding="sync">
-          </a>
-          <a class="ig-cell" href="assets/images/gallery-track-5k.jpg" data-lightbox role="listitem" aria-label="View track training photo">
-            <img src="assets/images/gallery-track-5k.jpg" alt="Athletes running together through a cone drill on a tree-lined path" decoding="async">
-          </a>
-        </div>
+        <a class="gallery-sport-media" href="gallery-track.html" aria-label="Open track and marathon photo catalog">
+          <img src="assets/images/event-5k-beyond-finish-line.jpg" alt="Runner holding up a V with his hand during the marathon" fetchpriority="high" decoding="sync">
+        </a>
         <div class="gallery-sport-copy">
           <span class="kick">04 · Track and Marathon</span>
           <h3 class="sec-h">Track and Marathon</h3>
           <p class="lead">From the track to the open road — endurance that points beyond the finish line.</p>
+          <p style="margin-top:16px;"><a class="btn btn-out-navy" href="gallery-track.html">View Photo Catalog</a></p>
         </div>
       </article>
     </div>
