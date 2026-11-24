@@ -423,25 +423,38 @@
         <p class="lead">Training, fellowship, and lives moved forward — here are highlights from our recent gatherings.</p>
       </div>
 
-      <div class="latest-events-grid" role="list" aria-label="Latest NHNE Athletics event photos">
-        <a class="latest-event-cell" href="assets/images/gallery-track-5k.jpg?v=2" data-lightbox role="listitem" aria-label="View the latest 5K event photo">
-          <img src="assets/images/gallery-track-5k.jpg?v=2" alt="Athletes running together at an NHNE Athletics 5K event" fetchpriority="high" decoding="sync">
-        </a>
-        <a class="latest-event-cell" href="assets/images/gallery-track-stretching.jpg" data-lightbox role="listitem" aria-label="View runners stretching together">
-          <img src="assets/images/gallery-track-stretching.jpg" alt="Runners stretching together before a recent event" fetchpriority="high" decoding="sync">
-        </a>
-        <a class="latest-event-cell" href="assets/images/DSC07488.JPG" data-lightbox role="listitem" aria-label="View a soccer training moment">
-          <img src="assets/images/DSC07488.JPG" alt="Soccer players completing a tactical drill during training" fetchpriority="high" decoding="sync">
-        </a>
-        <a class="latest-event-cell" href="assets/images/gallery-soccer-handshake.jpg" data-lightbox role="listitem" aria-label="View athletes sharing a handshake">
-          <img src="assets/images/gallery-soccer-handshake.jpg" alt="Athletes sharing a handshake after competing" fetchpriority="high" decoding="sync">
-        </a>
-        <a class="latest-event-cell" href="assets/images/gallery-race.jpg" data-lightbox role="listitem" aria-label="View a memorable race moment">
-          <img src="assets/images/gallery-race.jpg" alt="Runner smiling and giving a thumbs-up after the race" fetchpriority="high" decoding="sync">
-        </a>
-        <a class="latest-event-cell" href="assets/images/gallery-track-speaker.jpg" data-lightbox role="listitem" aria-label="View a speaker addressing the team">
-          <img src="assets/images/gallery-track-speaker.jpg" alt="Speaker addressing athletes and guests at a recent event" fetchpriority="high" decoding="sync">
-        </a>
+      <div class="latest-events-carousel" id="latest-events-carousel" role="region" aria-roledescription="carousel" aria-label="Latest NHNE Athletics event photos">
+        <div class="latest-events-track">
+          <div class="latest-events-slide is-active" role="group" aria-roledescription="slide" aria-label="1 of 2">
+            <a class="latest-event-cell" href="assets/images/gallery-track-5k.jpg?v=2" data-lightbox aria-label="View the latest 5K event photo">
+              <img src="assets/images/gallery-track-5k.jpg?v=2" alt="Athletes running together at an NHNE Athletics 5K event" fetchpriority="high" decoding="sync">
+            </a>
+            <a class="latest-event-cell" href="assets/images/gallery-track-stretching.jpg" data-lightbox aria-label="View runners stretching together">
+              <img src="assets/images/gallery-track-stretching.jpg" alt="Runners stretching together before a recent event" fetchpriority="high" decoding="sync">
+            </a>
+            <a class="latest-event-cell" href="assets/images/DSC07488.JPG" data-lightbox aria-label="View a soccer training moment">
+              <img src="assets/images/DSC07488.JPG" alt="Soccer players completing a tactical drill during training" fetchpriority="high" decoding="sync">
+            </a>
+          </div>
+          <div class="latest-events-slide" role="group" aria-roledescription="slide" aria-label="2 of 2">
+            <a class="latest-event-cell" href="assets/images/gallery-soccer.jpg" data-lightbox aria-label="View a soccer match photo">
+              <img src="assets/images/gallery-soccer.jpg" alt="Players competing for the ball in a soccer match" fetchpriority="high" decoding="sync">
+            </a>
+            <a class="latest-event-cell" href="assets/images/gallery-race.jpg" data-lightbox aria-label="View a memorable race moment">
+              <img src="assets/images/gallery-race.jpg" alt="Runner smiling and giving a thumbs-up after the race" fetchpriority="high" decoding="sync">
+            </a>
+            <a class="latest-event-cell" href="assets/images/gallery-track-speaker.jpg" data-lightbox aria-label="View a speaker addressing the team">
+              <img src="assets/images/gallery-track-speaker.jpg" alt="Speaker addressing athletes and guests at a recent event" fetchpriority="high" decoding="sync">
+            </a>
+          </div>
+        </div>
+
+        <button class="latest-events-prev" type="button" aria-label="Previous event photos">&#8249;</button>
+        <button class="latest-events-next" type="button" aria-label="Next event photos">&#8250;</button>
+        <div class="latest-events-dots" aria-label="Choose event photo page">
+          <button class="latest-events-dot is-active" type="button" data-i="0" aria-label="Show event photos 1 to 3"></button>
+          <button class="latest-events-dot" type="button" data-i="1" aria-label="Show event photos 4 to 6"></button>
+        </div>
       </div>
 
       <div class="latest-events-actions">

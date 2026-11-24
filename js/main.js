@@ -607,6 +607,46 @@
       start();
     })();
 
+    // ---- Latest events photo carousel ----
+    (function(){
+      var carousel=document.getElementById('latest-events-carousel');
+      if(!carousel) return;
+      var track=carousel.querySelector('.latest-events-track'),
+          slides=carousel.querySelectorAll('.latest-events-slide'),
+          dots=carousel.querySelectorAll('.latest-events-dot'),
+          prev=carousel.querySelector('.latest-events-prev'),
+          next=carousel.querySelector('.latest-events-next'),
+          index=0,timer,touchX=null,
+          reduce=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+      function go(nextIndex){
+        index=(nextIndex+slides.length)%slides.length;
+        track.style.transform='translateX('+(-index*100)+'%)';
+        slides.forEach(function(slide,i){slide.classList.toggle('is-active',i===index);});
+        dots.forEach(function(dot,i){dot.classList.toggle('is-active',i===index);});
+      }
+      function stop(){if(timer) clearInterval(timer);}
+      function start(){if(reduce)return;stop();timer=setInterval(function(){go(index+1);},5000);}
+
+      if(prev) prev.addEventListener('click',function(){go(index-1);start();});
+      if(next) next.addEventListener('click',function(){go(index+1);start();});
+      dots.forEach(function(dot){dot.addEventListener('click',function(){go(+dot.dataset.i);start();});});
+      carousel.addEventListener('mouseenter',stop);
+      carousel.addEventListener('mouseleave',start);
+      carousel.addEventListener('touchstart',function(e){touchX=e.touches[0].clientX;stop();},{passive:true});
+      carousel.addEventListener('touchend',function(e){
+        if(touchX===null)return;
+        var distance=e.changedTouches[0].clientX-touchX;
+        if(Math.abs(distance)>40) go(distance<0?index+1:index-1);
+        touchX=null;start();
+      },{passive:true});
+      carousel.addEventListener('keydown',function(e){
+        if(e.key==='ArrowLeft'){go(index-1);start();}
+        if(e.key==='ArrowRight'){go(index+1);start();}
+      });
+      go(0);start();
+    })();
+
     // ---- Our Why: verse reveal (tap toggle for touch / keyboard) ----
     (function(){
       var expands=document.querySelectorAll('.verse-expand');
